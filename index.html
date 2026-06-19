@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cofre de Prompts</title>
+    <style>
+        :root {
+            --primary-color: #4CAF50;
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --text-color: #333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--primary-color);
+            margin-top: 0;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+
+        textarea {
+            resize: vertical;
+            height: 100px;
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .prompt-list {
+            width: 100%;
+            max-width: 800px;
+            display: grid;
+            gap: 15px;
+            grid-template-columns: 1fr;
+        }
+
+        .prompt-card {
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-left: 5px solid var(--primary-color);
+            position: relative;
+        }
+
+        .prompt-title {
+            margin: 0 0 10px 0;
+            font-size: 18px;
+            color: var(--primary-color);
+        }
+
+        .prompt-content {
+            background-color: #f9f9f9;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            margin-bottom: 15px;
+            border: 1px solid #eee;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-copy {
+            background-color: #2196F3;
+        }
+        .btn-copy:hover {
+            background-color: #1976D2;
+        }
+
+        .btn-delete {
+            background-color: #f44336;
+        }
+        .btn-delete:hover {
+            background-color: #d32f2f;
+        }
+
+        /* Notificação Toast */
+        #toast {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 5px;
+            padding: 16px;
+            position: fixed;
+            z-index: 1;
+            bottom: 30px;
+            font-size: 17px;
+        }
+
+        #toast.show {
+            visibility: visible;
+            animation: fadein 0.5s, fadeout 0.5s 2.5s;
+        }
+
+        @keyframes fadein {
+            from {bottom: 0; opacity: 0;}
+            to {bottom: 30px; opacity: 1;}
+        }
+
+        @keyframes fadeout {
+            from {bottom: 30px; opacity: 1;}
+            to {bottom: 0; opacity: 0;}
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>🔒 Cofre de Prompts</h1>
+        <div class="form-group">
+            <label for="titulo">Título do Prompt</label>
+            <input type="text" id="titulo" placeholder="Ex: Criador de Artigos SEO" required>
+        </div>
+        <div class="form-group">
+            <label for="conteudo">Conteúdo do Prompt</label>
+            <textarea id="conteudo" placeholder="Cole ou digite seu prompt aqui..." required></textarea>
+        </div>
+        <button onclick="adicionarPrompt()">Salvar no Cofre</button>
+    </div>
+
+    <div class="prompt-list" id="listaPrompts">
+        </div>
+
+    <div id="toast">Copiado para a área de transferência!</div>
+
+    <script>
+        // Carrega os prompts salvos no localStorage
+        let prompts = JSON.parse(localStorage.getItem('meusPrompts')) || [];
+
+        // Função para renderizar os prompts na tela
+        function renderizarPrompts() {
+            const lista = document.getElementById('listaPrompts');
+            lista.innerHTML = ''; // Limpa a lista antes de renderizar
+
+            prompts.forEach((prompt, index) => {
+                const card = document.createElement('div');
+                card.className = 'prompt-card';
+                card.innerHTML = `
+                    <h3 class="prompt-title">${prompt.titulo}</h3>
+                    <div class="prompt-content" id="prompt-${index}">${prompt.conteudo}</div>
+                    <div class="card-actions">
+                        <button class="btn-copy" onclick="copiarPrompt(${index})">Copiar</button>
+                        <button class="btn-delete" onclick="deletarPrompt(${index})">Excluir</button>
+                    </div>
+                `;
+                lista.appendChild(card);
+            });
+        }
+
+        // Função para adicionar um novo prompt
+        function adicionarPrompt() {
+            const tituloInput = document.getElementById('titulo');
+            const conteudoInput = document.getElementById('conteudo');
+
+            const titulo = tituloInput.value.trim();
+            const conteudo = conteudoInput.value.trim();
+
+            if (titulo === '' || conteudo === '') {
+                alert('Por favor, preencha o título e o conteúdo do prompt.');
+                return;
+            }
+
+            // Adiciona ao array e salva no localStorage
+            prompts.push({ titulo, conteudo });
+            localStorage.setItem('meusPrompts', JSON.stringify(prompts));
+
+            // Limpa os campos
+            tituloInput.value = '';
+            conteudoInput.value = '';
+
+            renderizarPrompts();
+            mostrarToast("Prompt salvo com sucesso!");
+        }
+
+        // Função para deletar um prompt
+        function deletarPrompt(index) {
+            if(confirm('Tem certeza que deseja excluir este prompt?')) {
+                prompts.splice(index, 1);
+                localStorage.setItem('meusPrompts', JSON.stringify(prompts));
+                renderizarPrompts();
+            }
+        }
+
+        // Função para copiar o prompt para a área de transferência
+        function copiarPrompt(index) {
+            const texto = prompts[index].conteudo;
+            navigator.clipboard.writeText(texto).then(() => {
+                mostrarToast("Copiado para a área de transferência!");
+            }).catch(err => {
+                console.error('Erro ao copiar: ', err);
+                alert("Erro ao copiar o texto.");
+            });
+        }
+
+        // Função para mostrar a notificação (Toast)
+        function mostrarToast(mensagem) {
+            const toast = document.getElementById("toast");
+            toast.innerText = mensagem;
+            toast.className = "show";
+            setTimeout(() => {
+                toast.className = toast.className.replace("show", "");
+            }, 3000);
+        }
+
+        // Renderiza os prompts ao carregar a página
+        renderizarPrompts();
+    </script>
+</body>
+</html>
