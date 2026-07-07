@@ -4,18 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PromptVault 🔒</title>
-    <!-- Ícones Modernos -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
-            --panel-bg: rgba(30, 41, 59, 0.7);
-            --card-bg: #1e293b;
+            --bg-gradient: linear-gradient(-45deg, #0f172a, #1e1b4b, #2e1065, #0f172a);
+            --panel-bg: rgba(30, 41, 59, 0.45);
+            --card-bg: rgba(30, 41, 59, 0.7);
             --accent-color: #10b981;
             --accent-hover: #059669;
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
-            --border-color: rgba(255, 255, 255, 0.08);
+            --border-color: rgba(255, 255, 255, 0.06);
             --btn-copy: #3b82f6;
             --btn-copy-hover: #2563eb;
             --btn-delete: #ef4444;
@@ -25,6 +24,8 @@
         body {
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
             background: var(--bg-gradient);
+            background-size: 400% 400%;
+            animation: gradientBg 15s ease infinite;
             background-attachment: fixed;
             color: var(--text-main);
             margin: 0;
@@ -36,328 +37,207 @@
             box-sizing: border-box;
         }
 
+        @keyframes gradientBg {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
         .app-header {
             text-align: center;
             margin-bottom: 30px;
+            animation: fadeInDown 0.8s ease-out;
         }
 
         .app-header h1 {
-            font-size: 2.5rem;
+            font-size: 2.8rem;
             font-weight: 800;
             margin: 0;
-            background: linear-gradient(to right, #34d399, #3b82f6);
+            background: linear-gradient(to right, #34d399, #3b82f6, #a855f7);
+            background-size: 200% auto;
+            animation: shineText 4s linear infinite;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 12px;
+            gap: 14px;
         }
+
+        @keyframes shineText { to { background-position: 200% center; } }
 
         .app-header p {
             color: var(--text-muted);
-            margin-top: 8px;
-            font-size: 1rem;
+            margin-top: 10px;
+            font-size: 1.05rem;
+            letter-spacing: 0.5px;
         }
 
         .container {
             width: 100%;
             max-width: 800px;
             background: var(--panel-bg);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            padding: 30px;
-            border-radius: 16px;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 35px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
             box-sizing: border-box;
-            margin-bottom: 30px;
+            margin-bottom: 35px;
+            animation: scaleUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .form-group {
-            margin-bottom: 20px;
-        }
+        .form-group { margin-bottom: 22px; }
 
         label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             font-weight: 600;
-            font-size: 0.9rem;
-            color: var(--text-main);
+            font-size: 0.85rem;
+            color: #34d399;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 1px;
         }
 
         input[type="text"], textarea {
             width: 100%;
-            padding: 14px;
+            padding: 16px;
             background-color: rgba(15, 23, 42, 0.6);
             border: 1px solid var(--border-color);
-            border-radius: 8px;
+            border-radius: 12px;
             color: var(--text-main);
             box-sizing: border-box;
             font-family: inherit;
             font-size: 0.95rem;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        input[type="text"]:focus, textarea:focus {
+        input:focus, textarea:focus {
             outline: none;
-            border-color: var(--btn-copy);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+            border-color: #3b82f6;
+            background-color: rgba(15, 23, 42, 0.8);
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
         }
 
-        textarea {
-            resize: vertical;
-            height: 120px;
-            line-height: 1.5;
-        }
-
-        /* Estilização Customizada do Upload de Arquivo */
-        .file-upload-wrapper {
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: rgba(15, 23, 42, 0.4);
-            border: 2px dashed var(--border-color);
-            border-radius: 8px;
-            padding: 20px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .file-upload-wrapper:hover {
-            border-color: var(--accent-color);
-            background-color: rgba(16, 185, 129, 0.05);
-        }
-
-        .file-upload-wrapper input[type="file"] {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            opacity: 0;
-            cursor: pointer;
-        }
-
-        .file-upload-content {
-            text-align: center;
-            color: var(--text-muted);
-            pointer-events: none;
-        }
-
-        .file-upload-content i {
-            font-size: 1.8rem;
-            color: var(--accent-color);
-            margin-bottom: 8px;
-        }
+        textarea { resize: vertical; height: 140px; line-height: 1.6; }
 
         .btn-primary {
             width: 100%;
-            background-color: var(--accent-color);
+            background: linear-gradient(90deg, #10b981, #059669);
             color: #0f172a;
             border: none;
-            padding: 14px;
-            border-radius: 8px;
+            padding: 16px;
+            border-radius: 12px;
             cursor: pointer;
             font-size: 1rem;
             font-weight: 700;
-            transition: all 0.2s ease;
+            transition: all 0.3s ease;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3);
         }
 
         .btn-primary:hover {
-            background-color: var(--accent-hover);
-            transform: translateY(-1px);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.5);
+            filter: brightness(1.1);
         }
 
-        .btn-primary:disabled {
-            background-color: #475569;
-            color: var(--text-muted);
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
+        .search-container { width: 100%; max-width: 800px; margin-bottom: 30px; }
+        .search-container input { background-color: var(--panel-bg); border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(20px); }
+        .search-container input:focus { border-color: #a855f7; box-shadow: 0 0 20px rgba(168, 85, 247, 0.3); }
 
-        /* Seção de Pesquisa */
-        .search-container {
-            width: 100%;
-            max-width: 800px;
-            margin-bottom: 25px;
-        }
-
-        .search-container input {
-            background-color: var(--panel-bg);
-            border: 1px solid var(--border-color);
-            backdrop-filter: blur(16px);
-        }
-
-        /* Lista de Cards */
-        .prompt-list {
-            width: 100%;
-            max-width: 800px;
-            display: grid;
-            gap: 20px;
-            grid-template-columns: 1fr;
-        }
+        .prompt-list { width: 100%; max-width: 800px; display: grid; gap: 25px; grid-template-columns: 1fr; }
 
         .prompt-card {
             background: var(--card-bg);
-            padding: 24px;
-            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            padding: 26px;
+            border-radius: 16px;
             border: 1px solid var(--border-color);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            animation: cardAppear 0.5s ease-out forwards;
+            opacity: 0;
         }
 
         .prompt-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.25);
-            border-color: rgba(255,255,255,0.15);
+            transform: translateY(-5px) scale(1.01);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            border-color: rgba(255, 255, 255, 0.2);
+            background: rgba(30, 41, 59, 0.8);
         }
 
-        .prompt-title {
-            margin: 0 0 16px 0;
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: var(--text-main);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
+        .prompt-title { margin: 0 0 18px 0; font-size: 1.35rem; font-weight: 700; display: flex; align-items: center; gap: 12px; }
         .prompt-content {
-            background-color: #0f172a;
-            padding: 16px;
-            border-radius: 8px;
-            font-family: 'Fira Code', 'Courier New', monospace;
-            font-size: 0.9rem;
-            white-space: pre-wrap;
-            margin-bottom: 20px;
-            border: 1px solid rgba(255,255,255,0.05);
-            color: #34d399;
-            max-height: 250px;
-            overflow-y: auto;
+            background-color: rgba(15, 23, 42, 0.8); padding: 18px; border-radius: 10px;
+            font-family: 'Fira Code', monospace; font-size: 0.9rem; white-space: pre-wrap;
+            margin-bottom: 20px; border: 1px solid rgba(255, 255, 255, 0.04); color: #34d399;
+            max-height: 250px; overflow-y: auto;
         }
 
-        .media-container {
-            margin-bottom: 20px;
-            max-width: 100%;
-            border-radius: 8px;
-            overflow: hidden;
-            background: #0f172a;
-            display: flex;
-            justify-content: center;
-            border: 1px solid var(--border-color);
-        }
+        .card-actions { display: flex; gap: 12px; }
+        .btn-action { border: none; padding: 12px 22px; border-radius: 8px; cursor: pointer; font-size: 0.9rem; font-weight: 600; transition: all 0.2s ease; display: flex; align-items: center; gap: 8px; color: white; }
+        .btn-copy { background-color: var(--btn-copy); box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2); }
+        .btn-copy:hover { background-color: var(--btn-copy-hover); transform: translateY(-1px); }
+        .btn-delete { background-color: var(--btn-delete); margin-left: auto; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2); }
+        .btn-delete:hover { background-color: var(--btn-delete-hover); transform: translateY(-1px); }
 
-        .media-container img, .media-container video {
-            max-width: 100%;
-            max-height: 380px;
-            object-fit: contain;
-        }
-
-        .card-actions {
-            display: flex;
-            gap: 12px;
-        }
-
-        .btn-action {
-            border: none;
-            padding: 10px 18px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            font-weight: 600;
-            transition: background-color 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: white;
-        }
-
-        .btn-copy { background-color: var(--btn-copy); }
-        .btn-copy:hover { background-color: var(--btn-copy-hover); }
-
-        .btn-delete { background-color: var(--btn-delete); margin-left: auto; }
-        .btn-delete:hover { background-color: var(--btn-delete-hover); }
-
-        /* Notificação Toast Moderna */
         #toast {
-            visibility: hidden;
-            min-width: 280px;
-            background-color: #10b981;
-            color: #0f172a;
-            font-weight: 700;
-            text-align: center;
-            border-radius: 8px;
-            padding: 16px;
-            position: fixed;
-            z-index: 100;
-            bottom: 40px;
-            font-size: 0.95rem;
-            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4);
+            visibility: hidden; min-width: 300px; background: linear-gradient(135deg, #10b981, #059669);
+            color: #0f172a; font-weight: 700; text-align: center; border-radius: 12px; padding: 18px;
+            position: fixed; z-index: 100; bottom: -50px; left: 50%; transform: translateX(-50%);
+            font-size: 0.95rem; box-shadow: 0 15px 35px rgba(16, 185, 129, 0.4);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); opacity: 0;
         }
+        #toast.show { visibility: visible; bottom: 40px; opacity: 1; }
 
-        #toast.show {
-            visibility: visible;
-            animation: fadein 0.4s, fadeout 0.4s 2.6s;
-        }
-
-        @keyframes fadein { from {bottom: 20px; opacity: 0;} to {bottom: 40px; opacity: 1;} }
-        @keyframes fadeout { from {bottom: 40px; opacity: 1;} to {bottom: 20px; opacity: 0;} }
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes scaleUp { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
+        @keyframes cardAppear { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
     <div class="app-header">
-        <h1><i class="fa-solid from-neutral-300 fa-shield-halved"></i> PromptVault</h1>
+        <h1><i class="fa-solid fa-shield-halved"></i> PromptVault</h1>
         <p>Seu ecossistema privado e inteligente de prompts na nuvem</p>
     </div>
 
-    <div class="container">
-        <div class="form-group">
-            <label for="titulo">Título do Prompt</label>
-            <input type="text" id="titulo" placeholder="Ex: Engenheiro de Software Sênior Python" required>
-        </div>
-        <div class="form-group">
-            <label for="conteudo">Corpo do Prompt</label>
-            <textarea id="conteudo" placeholder="Escreva as diretrizes detalhadas do prompt aqui..." required></textarea>
-        </div>
-        <div class="form-group">
-            <label>Mídia Complementar</label>
-            <div class="file-upload-wrapper">
-                <div class="file-upload-content" id="uploadStatus">
-                    <i class="fa-solid fa-cloud-arrow-up"></i>
-                    <p id="fileNameText" style="margin: 5px 0 0 0;">Arraste ou clique para anexar Imagem / Vídeo</p>
-                </div>
-                <input type="file" id="midia" accept="image/*,video/*">
+    <div style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+        <div class="container">
+            <div class="form-group">
+                <label for="titulo">Título do Prompt</label>
+                <input type="text" id="titulo" placeholder="Ex: Engenheiro de Software Sênior Python" required>
             </div>
+            <div class="form-group">
+                <label for="conteudo">Corpo do Prompt</label>
+                <textarea id="conteudo" placeholder="Escreva as diretrizes detalhadas do prompt aqui..." required></textarea>
+            </div>
+            <button id="btnSalvar" class="btn-primary">
+                <i class="fa-solid fa-bookmark"></i> Salvar no Cofre
+            </button>
         </div>
-        <button id="btnSalvar" class="btn-primary">
-            <i class="fa-solid fa-bookmark"></i> Salvar no Cofre
-        </button>
+
+        <div class="search-container">
+            <input type="text" id="buscaInput" placeholder="🔍 Buscar por título ou palavras-chave...">
+        </div>
+
+        <div class="prompt-list" id="listaPrompts">
+            <p style="text-align: center; color: var(--text-muted);"><i class="fa-solid fa-spinner fa-spin"></i> Conectando ao banco de dados...</p>
+        </div>
     </div>
 
-    <div class="search-container">
-        <input type="text" id="buscaInput" placeholder="🔍 Buscar por título ou tags...">
-    </div>
+    <div id="toast">Operação realizada!</div>
 
-    <div class="prompt-list" id="listaPrompts">
-        <p style="text-align: center; color: var(--text-muted);"><i class="fa-solid fa-spinner fa-spin"></i> Desbravando os arquivos na nuvem...</p>
-    </div>
-
-    <div id="toast">Copiado com sucesso!</div>
-
-    <!-- Scripts do Firebase via CDN -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, addDoc, deleteDoc, doc, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-        import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
+        // Sua configuração do Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyDNKgpaOCQ00RVxELsjAh3zoQZr3_PCis4",
             authDomain: "cofre-de-prompts.firebaseapp.com",
@@ -369,24 +249,11 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        const storage = getStorage(app);
         const p_collection = collection(db, "prompts");
 
         let todosPrompts = [];
 
-        // Atualiza feedback visual do upload de arquivo
-        document.getElementById('midia').addEventListener('change', (e) => {
-            const textEl = document.getElementById('fileNameText');
-            if(e.target.files.length > 0) {
-                textEl.innerText = `Anexado: ${e.target.files[0].name}`;
-                textEl.style.color = "#10b981";
-            } else {
-                textEl.innerText = "Arraste ou clique para anexar Imagem / Vídeo";
-                textEl.style.color = "var(--text-muted)";
-            }
-        });
-
-        // Escuta os dados do banco
+        // Escuta os dados em tempo real (Sem travas de autenticação)
         const q = query(p_collection, orderBy("criadoEm", "desc"));
         onSnapshot(q, (snapshot) => {
             todosPrompts = [];
@@ -394,6 +261,9 @@
                 todosPrompts.push({ id: docSnapshot.id, ...docSnapshot.data() });
             });
             renderizarCards(todosPrompts);
+        }, (error) => {
+            console.error("Erro no Firestore:", error);
+            alert("Erro ao carregar dados. Verifique as regras do Firestore no Console.");
         });
 
         function renderizarCards(dados) {
@@ -401,36 +271,26 @@
             lista.innerHTML = '';
 
             if(dados.length === 0) {
-                lista.innerHTML = '<p style="text-align: center; color: var(--text-muted);">Nenhum registro encontrado.</p>';
+                lista.innerHTML = '<p style="text-align: center; color: var(--text-muted);">Cofre vazio. Guarde seu primeiro prompt acima!</p>';
                 return;
             }
 
-            dados.forEach((prompt) => {
+            dados.forEach((prompt, index) => {
                 const card = document.createElement('div');
                 card.className = 'prompt-card';
+                card.style.animationDelay = `${index * 0.05}s`;
                 
-                let mediaHtml = '';
-                if (prompt.midiaUrl) {
-                    if (prompt.midiaType && prompt.midiaType.startsWith('video/')) {
-                        mediaHtml = `<div class="media-container"><video src="${prompt.midiaUrl}" controls></video></div>`;
-                    } else {
-                        mediaHtml = `<div class="media-container"><img src="${prompt.midiaUrl}" alt="Mídia"></div>`;
-                    }
-                }
-
                 card.innerHTML = `
                     <h3 class="prompt-title"><i class="fa-solid fa-terminal" style="color: var(--accent-color); font-size: 1rem;"></i> ${prompt.titulo}</h3>
-                    ${mediaHtml}
                     <div class="prompt-content">${prompt.conteudo}</div>
                     <div class="card-actions">
                         <button class="btn-action btn-copy" data-texto="${btoa(unescape(encodeURIComponent(prompt.conteudo)))}"><i class="fa-regular fa-copy"></i> Copiar Prompt</button>
-                        <button class="btn-action btn-delete" data-id="${prompt.id}" data-midiapath="${prompt.midiaPath || ''}"><i class="fa-regular fa-trash-can"></i> Excluir</button>
+                        <button class="btn-action btn-delete" data-id="${prompt.id}"><i class="fa-regular fa-trash-can"></i> Excluir</button>
                     </div>
                 `;
                 lista.appendChild(card);
             });
 
-            // Reatribui os eventos para manter o escopo seguro
             document.querySelectorAll('.btn-copy').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     const target = e.target.closest('.btn-copy');
@@ -442,12 +302,11 @@
             document.querySelectorAll('.btn-delete').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     const target = e.target.closest('.btn-delete');
-                    deletarPrompt(target.dataset.id, target.dataset.midiapath);
+                    deletarPrompt(target.dataset.id);
                 });
             });
         }
 
-        // Sistema de busca em tempo real
         document.getElementById('buscaInput').addEventListener('input', (e) => {
             const termo = e.target.value.toLowerCase().trim();
             const filtrados = todosPrompts.filter(p => 
@@ -457,73 +316,37 @@
             renderizarCards(filtrados);
         });
 
-        // Ação de Salvar
         async function adicionarPrompt() {
             const tituloInput = document.getElementById('titulo');
             const conteudoInput = document.getElementById('conteudo');
-            const midiaInput = document.getElementById('midia');
             const btnSalvar = document.getElementById('btnSalvar');
 
             const titulo = tituloInput.value.trim();
             const conteudo = conteudoInput.value.trim();
-            const arquivo = midiaInput.files[0];
 
-            if (titulo === '' || conteudo === '') {
-                alert('Preencha os dados de texto obrigatórios.');
-                return;
-            }
+            if (titulo === '' || conteudo === '') return alert('Por favor, preencha o título e o corpo do prompt.');
 
             btnSalvar.disabled = true;
             btnSalvar.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Armazenando...`;
 
-            let midiaUrl = null;
-            let midiaType = null;
-            let midiaPath = null;
-
             try {
-                if (arquivo) {
-                    midiaPath = `midias/${Date.now()}_${arquivo.name}`;
-                    const storageRef = ref(storage, midiaPath);
-                    await uploadBytes(storageRef, arquivo);
-                    midiaUrl = await getDownloadURL(storageRef);
-                    midiaType = arquivo.type;
-                }
-
-                await addDoc(p_collection, {
-                    titulo,
-                    conteudo,
-                    midiaUrl,
-                    midiaType,
-                    midiaPath,
-                    criadoEm: Date.now()
-                });
-
+                await addDoc(p_collection, { titulo, conteudo, criadoEm: Date.now() });
                 tituloInput.value = '';
                 conteudoInput.value = '';
-                midiaInput.value = '';
-                document.getElementById('fileNameText').innerText = "Arraste ou clique para anexar Imagem / Vídeo";
-                document.getElementById('fileNameText').style.color = "var(--text-muted)";
-                mostrarToast("Prompt criptografado e salvo!");
-
+                mostrarToast("Prompt salvo com sucesso!");
             } catch (error) {
-                console.error(error);
-                alert("Falha de conexão com o servidor de dados.");
+                alert("Erro ao gravar dados no servidor.");
             } finally {
                 btnSalvar.disabled = false;
                 btnSalvar.innerHTML = `<i class="fa-solid fa-bookmark"></i> Salvar no Cofre`;
             }
         }
 
-        // Ação de Exclusão
-        async function deletarPrompt(id, midiaPath) {
-            if (confirm('Deseja realmente purgar este prompt do seu banco de dados?')) {
+        async function deletarPrompt(id) {
+            if (confirm('Tem certeza de que deseja excluir permanentemente este prompt?')) {
                 try {
-                    if (midiaPath) {
-                        const mRef = ref(storage, midiaPath);
-                        await deleteObject(mRef);
-                    }
                     await deleteDoc(doc(db, "prompts", id));
-                    mostrarToast("Removido com segurança.");
+                    mostrarToast("Prompt removido.");
                 } catch (error) {
                     alert("Erro ao remover o documento.");
                 }
@@ -533,14 +356,14 @@
         function copiarPrompt(texto) {
             navigator.clipboard.writeText(texto).then(() => {
                 mostrarToast("Copiado para a área de transferência!");
-            }).catch(() => alert("Erro operacional ao ler a área de transferência."));
+            }).catch(() => alert("Erro ao acessar área de transferência."));
         }
 
         function mostrarToast(mensagem) {
             const toast = document.getElementById("toast");
             toast.innerText = mensagem;
-            toast.className = "show";
-            setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000);
+            toast.classList.add("show");
+            setTimeout(() => { toast.classList.remove("show"); }, 3000);
         }
 
         document.getElementById('btnSalvar').addEventListener('click', adicionarPrompt);
