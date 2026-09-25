@@ -3,199 +3,265 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PromptVault</title>
+<title>PromptVault — Cofre Pessoal de Prompts</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,400&family=Space+Grotesk:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#0b120f;
-    --panel:#121c17;
-    --panel-2:#0f1813;
-    --hairline:rgba(201,169,97,.16);
-    --brass:#c9a961;
-    --brass-bright:#e6cb87;
-    --brass-dim:#7c6a3f;
-    --text:#ece6d6;
-    --text-dim:#8d9690;
-    --text-placeholder:#6b746e;
-    --teal:#4f8574;
-    --danger:#a94f42;
-    --shadow: 0 20px 50px -20px rgba(0,0,0,.6);
+    --bg: #080d0b;
+    --panel: #111a15;
+    --panel-sub: #0a110e;
+    --hairline: rgba(201,169,97,.18);
+    --hairline-hover: rgba(201,169,97,.4);
+    --brass: #c9a961;
+    --brass-bright: #ebd193;
+    --brass-dim: #7c6a3f;
+    --text: #eee9dc;
+    --text-dim: #929b95;
+    --text-placeholder: #5c6560;
+    --teal: #519881;
+    --teal-bg: rgba(81,152,129,.12);
+    --danger: #c2594a;
+    --danger-bg: rgba(194,89,74,.12);
+    --shadow-main: 0 24px 48px -12px rgba(0,0,0,.75);
+    --shadow-card: 0 12px 28px -8px rgba(0,0,0,.45);
+    --radius: 6px;
+    --transition: all .2s cubic-bezier(.16, 1, .3, 1);
   }
-  *{box-sizing:border-box;}
-  body{
-    margin:0;
-    min-height:100vh;
-    background:
-      radial-gradient(1200px 500px at 50% -10%, rgba(201,169,97,.07), transparent 60%),
-      var(--bg);
-    color:var(--text);
-    font-family:'Space Grotesk', system-ui, sans-serif;
-    padding-top:76px;
-  }
-  ::selection{ background:var(--brass); color:#0b120f; }
-  :focus-visible{ outline: 2px solid var(--brass-bright); outline-offset: 2px; }
 
-  header{
-    position:fixed; top:0; left:0; width:100%; height:76px;
-    display:flex; align-items:center; justify-content:space-between;
-    padding:0 5%;
-    background:linear-gradient(180deg, #0e1613, #0b120f 90%);
-    border-bottom:1px solid var(--hairline);
-    z-index:1000;
+  *{ box-sizing: border-box; }
+
+  body{
+    margin: 0;
+    min-height: 100vh;
+    background:
+      radial-gradient(1400px 600px at 50% -10%, rgba(201,169,97,.08), transparent 70%),
+      radial-gradient(800px 400px at 10% 90%, rgba(81,152,129,.04), transparent 60%),
+      var(--bg);
+    color: var(--text);
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    padding-top: 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
-  .brand{ display:flex; align-items:center; gap:14px; }
+
+  ::selection{ background: var(--brass); color: #080d0b; }
+  :focus-visible{ outline: 2px solid var(--brass-bright); outline-offset: 3px; }
+
+  /* ---------- Header ---------- */
+  header{
+    position: fixed; top: 0; left: 0; width: 100%; height: 80px;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 6%;
+    background: rgba(8, 13, 11, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--hairline);
+    z-index: 1000;
+  }
+  .brand{ display: flex; align-items: center; gap: 14px; }
   .dial{
-    width:38px; height:38px; border-radius:50%;
-    border:2px solid var(--brass-dim);
-    position:relative;
-    background:radial-gradient(circle at 35% 30%, #1a2620, #0c130f 70%);
-    animation: unlock 1.1s cubic-bezier(.2,.8,.2,1) both;
+    width: 40px; height: 40px; border-radius: 50%;
+    border: 2px solid var(--brass-dim);
+    position: relative;
+    background: radial-gradient(circle at 35% 30%, #1c2b24, #080d0b 75%);
+    box-shadow: inset 0 0 8px rgba(0,0,0,.8);
+    animation: unlock 1.2s cubic-bezier(.16, 1, .3, 1) both;
   }
   .dial::before{
-    content:''; position:absolute; inset:6px; border-radius:50%;
-    border:1px solid var(--brass); opacity:.55;
+    content: ''; position: absolute; inset: 5px; border-radius: 50%;
+    border: 1px dashed var(--brass); opacity: .6;
   }
   .dial::after{
-    content:''; position:absolute; top:2px; left:50%;
-    width:2px; height:8px; background:var(--brass-bright);
-    transform:translateX(-50%);
+    content: ''; position: absolute; top: 3px; left: 50%;
+    width: 2px; height: 8px; background: var(--brass-bright);
+    transform: translateX(-50%); border-radius: 1px;
+    box-shadow: 0 0 6px var(--brass-bright);
   }
-  @keyframes unlock{ from{ transform:rotate(-140deg); opacity:0;} to{ transform:rotate(0deg); opacity:1;} }
-  .wordmark{ font-family:'Fraunces', serif; font-weight:600; font-size:1.15rem; letter-spacing:.04em; }
-  .wordmark span{ color:var(--brass); font-style:italic; font-weight:400; }
-  .entry-count{
-    font-family:'IBM Plex Mono', monospace; font-size:.72rem; letter-spacing:.08em;
-    color:var(--text-dim); text-transform:uppercase;
+  @keyframes unlock{ from{ transform: rotate(-180deg) scale(.9); opacity: 0; } to{ transform: rotate(0deg) scale(1); opacity: 1; } }
+
+  .wordmark{ font-family: 'Fraunces', serif; font-weight: 600; font-size: 1.25rem; letter-spacing: .03em; }
+  .wordmark span{ color: var(--brass); font-style: italic; font-weight: 400; }
+  
+  .entry-badge{
+    font-family: 'IBM Plex Mono', monospace; font-size: .75rem; letter-spacing: .08em;
+    color: var(--brass); background: rgba(201,169,97,.08);
+    border: 1px solid var(--hairline); padding: 6px 12px; border-radius: 20px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .entry-badge::before{
+    content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--brass-bright);
+    box-shadow: 0 0 8px var(--brass-bright);
   }
 
-  .main-wrapper{ width:90%; max-width:620px; margin:0 auto; padding:34px 0 80px; }
+  /* ---------- Layout Principal ---------- */
+  .main-wrapper{
+    width: 90%; max-width: 720px; margin: 0 auto; padding: 40px 0 100px;
+  }
 
+  .eyebrow-container{
+    display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;
+  }
   .eyebrow{
-    font-family:'IBM Plex Mono', monospace; font-size:.7rem; letter-spacing:.16em;
-    color:var(--brass-dim); text-transform:uppercase; margin:0 0 8px 2px;
+    font-family: 'IBM Plex Mono', monospace; font-size: .72rem; letter-spacing: .16em;
+    color: var(--brass-dim); text-transform: uppercase; margin: 0;
   }
 
+  /* ---------- Formulário ---------- */
   .form-container{
-    background:linear-gradient(180deg, var(--panel), var(--panel-2));
-    border:1px solid var(--hairline);
-    border-radius:4px;
-    padding:26px 26px 22px;
-    margin-bottom:44px;
-    box-shadow:var(--shadow);
-    position:relative;
+    background: linear-gradient(180deg, var(--panel), var(--panel-sub));
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius);
+    padding: 28px;
+    margin-bottom: 50px;
+    box-shadow: var(--shadow-main);
+    position: relative;
+    transition: var(--transition);
   }
+  .form-container:focus-within{ border-color: var(--brass-dim); }
   .form-container::before{
-    content:''; position:absolute; top:0; left:22px; width:36px; height:3px;
-    background:var(--brass); border-radius:0 0 3px 3px;
+    content: ''; position: absolute; top: 0; left: 24px; width: 42px; height: 3px;
+    background: var(--brass); border-radius: 0 0 3px 3px; box-shadow: 0 2px 8px rgba(201,169,97,.4);
   }
-  label.field-label{
-    display:block; font-family:'IBM Plex Mono', monospace; font-size:.68rem;
-    letter-spacing:.12em; color:var(--text-dim); text-transform:uppercase;
-    margin:14px 0 6px;
-  }
-  label.field-label:first-of-type{ margin-top:2px; }
-  input[type="text"], textarea{
-    width:100%; padding:11px 12px; background:rgba(0,0,0,.28);
-    border:1px solid var(--hairline); border-radius:3px; color:var(--text);
-    font-family:'Space Grotesk', sans-serif; font-size:.95rem;
-    transition:border-color .2s;
-  }
-  input[type="text"]::placeholder, textarea::placeholder{
-    color:var(--text-placeholder);
-  }
-  input[type="text"]:focus, textarea:focus{ border-color:var(--brass-dim); }
-  textarea{ resize:vertical; min-height:70px; }
 
-  .file-row{
-    display:flex; align-items:center; gap:10px; margin-top:14px;
-    border:1px dashed var(--hairline); border-radius:3px; padding:10px 12px;
+  label.field-label{
+    display: block; font-family: 'IBM Plex Mono', monospace; font-size: .7rem;
+    letter-spacing: .12em; color: var(--text-dim); text-transform: uppercase;
+    margin: 18px 0 8px;
   }
-  .file-row i{ color:var(--brass-dim); }
-  .file-row input[type="file"]{
-    flex:1; color:var(--text-dim); font-size:.8rem;
+  label.field-label:first-of-type{ margin-top: 0; }
+
+  input[type="text"], textarea{
+    width: 100%; padding: 12px 14px; background: rgba(0,0,0,.35);
+    border: 1px solid var(--hairline); border-radius: var(--radius); color: var(--text);
+    font-family: 'Space Grotesk', sans-serif; font-size: .95rem; line-height: 1.5;
+    transition: var(--transition);
   }
-  .file-name{ font-family:'IBM Plex Mono', monospace; font-size:.72rem; color:var(--brass); }
+  input[type="text"]::placeholder, textarea::placeholder{ color: var(--text-placeholder); }
+  input[type="text"]:focus, textarea:focus{
+    border-color: var(--brass); background: rgba(0,0,0,.5);
+  }
+  textarea{ resize: vertical; min-height: 90px; }
+
+  /* Input de Arquivo customizado */
+  .file-dropzone{
+    position: relative;
+    border: 1px dashed var(--hairline); border-radius: var(--radius);
+    padding: 14px 16px; background: rgba(0,0,0,.15);
+    display: flex; align-items: center; justify-content: space-between;
+    cursor: pointer; transition: var(--transition);
+  }
+  .file-dropzone:hover{ border-color: var(--brass-dim); background: rgba(201,169,97,.03); }
+  .file-dropzone input[type="file"]{
+    position: absolute; inset: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer;
+  }
+  .file-info{ display: flex; align-items: center; gap: 10px; color: var(--text-dim); font-size: .85rem; }
+  .file-info i{ color: var(--brass); font-size: 1rem; }
+  .file-name{ font-family: 'IBM Plex Mono', monospace; font-size: .78rem; color: var(--brass-bright); word-break: break-all; }
+  .btn-remove-file{
+    background: none; border: none; color: var(--danger); font-size: .85rem;
+    cursor: pointer; padding: 4px 8px; border-radius: 3px; display: none;
+    z-index: 2; transition: var(--transition);
+  }
+  .btn-remove-file:hover{ background: var(--danger-bg); }
 
   #btnSalvar{
-    width:100%; margin-top:20px; padding:13px; border:none; border-radius:3px;
-    background:linear-gradient(180deg, var(--brass-bright), var(--brass));
-    color:#171009; font-family:'Space Grotesk', sans-serif; font-weight:600; font-size:.9rem;
-    letter-spacing:.03em; cursor:pointer; transition:transform .15s, box-shadow .15s;
-    display:flex; align-items:center; justify-content:center; gap:8px;
+    width: 100%; margin-top: 24px; padding: 14px; border: none; border-radius: var(--radius);
+    background: linear-gradient(180deg, var(--brass-bright), var(--brass));
+    color: #0b120f; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: .95rem;
+    letter-spacing: .03em; cursor: pointer; transition: var(--transition);
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    box-shadow: 0 4px 14px rgba(201,169,97,.2);
   }
-  #btnSalvar:hover{ transform:translateY(-1px); box-shadow:0 8px 20px -8px rgba(201,169,97,.5); }
-  #btnSalvar:disabled{ opacity:.55; cursor:progress; transform:none; }
+  #btnSalvar:hover{ transform: translateY(-2px); box-shadow: 0 8px 24px rgba(201,169,97,.4); }
+  #btnSalvar:active{ transform: translateY(0); }
+  #btnSalvar:disabled{ opacity: .55; cursor: not-allowed; transform: none; box-shadow: none; }
 
-  .hint{
-    font-size:.75rem; color:var(--danger); margin-top:10px; min-height:1em;
+  .hint{ font-size: .8rem; color: var(--danger); margin-top: 12px; min-height: 1.2em; }
+
+  /* ---------- Controles de Busca e Filtro ---------- */
+  .vault-controls{
+    display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap;
   }
-  .hint.ok{ color:var(--teal); }
+  .search-box{ flex: 1; min-width: 200px; position: relative; }
+  .search-box i{ position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-dim); font-size: .85rem; }
+  .search-box input{ padding-left: 38px; }
 
-  .toast{
-    position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(100px);
-    background:var(--panel); border:1px solid var(--hairline); color:var(--text);
-    padding:10px 18px; border-radius:4px; font-size:.85rem;
-    box-shadow:var(--shadow); opacity:0; pointer-events:none;
-    transition:transform .35s cubic-bezier(.2,.8,.2,1), opacity .35s;
-    z-index:2000; display:flex; align-items:center; gap:8px;
-  }
-  .toast.show{ transform:translateX(-50%) translateY(0); opacity:1; }
-
-  #listaPrompts{ display:flex; flex-direction:column; gap:18px; }
+  /* ---------- Lista & Cards ---------- */
+  #listaPrompts{ display: flex; flex-direction: column; gap: 20px; }
 
   .state-msg{
-    text-align:center; padding:50px 20px; color:var(--text-dim);
-    border:1px dashed var(--hairline); border-radius:4px;
+    text-align: center; padding: 60px 20px; color: var(--text-dim);
+    border: 1px dashed var(--hairline); border-radius: var(--radius); background: rgba(0,0,0,.15);
   }
-  .state-msg i{ font-size:1.6rem; color:var(--brass-dim); display:block; margin-bottom:10px; }
-  .state-msg .sub{ font-size:.78rem; margin-top:6px; }
+  .state-msg i{ font-size: 2rem; color: var(--brass-dim); display: block; margin-bottom: 12px; }
+  .state-msg .sub{ font-size: .82rem; margin-top: 6px; color: var(--text-placeholder); }
 
   .prompt-card{
-    background:var(--panel); border:1px solid var(--hairline); border-radius:4px;
-    padding:20px 20px 18px; position:relative;
-    animation: rise .35s ease both;
+    background: var(--panel); border: 1px solid var(--hairline); border-radius: var(--radius);
+    padding: 24px; position: relative; box-shadow: var(--shadow-card);
+    transition: var(--transition); animation: rise .4s ease both;
   }
-  @keyframes rise{ from{ opacity:0; transform:translateY(8px);} to{ opacity:1; transform:translateY(0);} }
+  .prompt-card:hover{ border-color: var(--hairline-hover); transform: translateY(-2px); }
+  @keyframes rise{ from{ opacity: 0; transform: translateY(12px); } to{ opacity: 1; transform: translateY(0); } }
 
+  .card-header{
+    display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 12px;
+  }
   .ledger-no{
-    position:absolute; top:0; right:18px; transform:translateY(-50%);
-    background:var(--bg); border:1px solid var(--hairline); border-radius:2px;
-    padding:2px 8px; font-family:'IBM Plex Mono', monospace; font-size:.68rem;
-    letter-spacing:.06em; color:var(--brass);
+    background: var(--panel-sub); border: 1px solid var(--hairline); border-radius: 4px;
+    padding: 3px 8px; font-family: 'IBM Plex Mono', monospace; font-size: .7rem;
+    color: var(--brass); white-space: nowrap;
   }
   .card-title{
-    font-family:'Fraunces', serif; font-weight:500; font-size:1.15rem; margin:2px 0 8px;
-    padding-right:70px; word-break:break-word;
+    font-family: 'Fraunces', serif; font-weight: 500; font-size: 1.2rem; margin: 0;
+    line-height: 1.35; color: var(--text); word-break: break-word; flex: 1;
   }
+
   .card-body{
-    font-size:.92rem; line-height:1.55; color:#d8d2c2; margin:0 0 14px;
-    white-space:pre-wrap; word-break:break-word;
+    font-size: .94rem; line-height: 1.6; color: #d1cbc0; margin: 0 0 16px;
+    white-space: pre-wrap; word-break: break-word; background: rgba(0,0,0,.2);
+    padding: 14px; border-radius: 4px; border-left: 2px solid var(--brass-dim);
   }
-  .media-preview{
-    width:100%; max-height:280px; object-fit:cover; border-radius:3px; margin-bottom:14px;
-    border:1px solid var(--hairline); display:block; background:var(--panel-2);
-  }
-  .card-actions{ display:flex; gap:8px; }
+
+  .media-wrapper{ margin-bottom: 16px; overflow: hidden; border-radius: 4px; border: 1px solid var(--hairline); background: #000; }
+  .media-preview{ width: 100%; max-height: 360px; object-fit: contain; display: block; }
+
+  .card-actions{ display: flex; gap: 10px; border-top: 1px solid rgba(201,169,97,.08); padding-top: 14px; }
   .card-actions button{
-    border:none; border-radius:3px; padding:8px 13px; font-size:.78rem;
-    font-family:'Space Grotesk', sans-serif; font-weight:500; cursor:pointer;
-    display:flex; align-items:center; gap:6px; transition:opacity .15s;
+    border: none; border-radius: 4px; padding: 8px 14px; font-size: .8rem;
+    font-family: 'Space Grotesk', sans-serif; font-weight: 500; cursor: pointer;
+    display: flex; align-items: center; gap: 6px; transition: var(--transition);
   }
-  .card-actions button:hover{ opacity:.85; }
-  .btn-copy{ background:rgba(79,133,116,.16); color:var(--teal); border:1px solid rgba(79,133,116,.35) !important; }
-  .btn-delete{ background:rgba(169,79,66,.14); color:var(--danger); border:1px solid rgba(169,79,66,.32) !important; }
+  .btn-copy{ background: var(--teal-bg); color: var(--teal); border: 1px solid rgba(81,152,129,.3) !important; }
+  .btn-copy:hover{ background: rgba(81,152,129,.25); }
+  .btn-delete{ background: var(--danger-bg); color: var(--danger); border: 1px solid rgba(194,89,74,.3) !important; margin-left: auto; }
+  .btn-delete:hover{ background: rgba(194,89,74,.25); }
+
+  /* ---------- Toast ---------- */
+  .toast{
+    position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px);
+    background: var(--panel); border: 1px solid var(--brass); color: var(--text);
+    padding: 12px 22px; border-radius: 30px; font-size: .88rem;
+    box-shadow: var(--shadow-main); opacity: 0; pointer-events: none;
+    transition: var(--transition); z-index: 2000; display: flex; align-items: center; gap: 10px;
+  }
+  .toast.show{ transform: translateX(-50%) translateY(0); opacity: 1; }
 
   @media (prefers-reduced-motion: reduce){
-    .dial, .prompt-card, .toast{ animation:none !important; transition:none !important; }
+    .dial, .prompt-card, .toast{ animation: none !important; transition: none !important; }
   }
 
-  @media (max-width:480px){
-    header{ padding:0 5%; }
-    .wordmark{ font-size:1rem; }
-    .form-container{ padding:22px 18px 18px; }
+  @media (max-width: 600px){
+    header{ padding: 0 4%; }
+    .main-wrapper{ width: 94%; padding-top: 20px; }
+    .form-container{ padding: 20px; }
+    .card-actions{ flex-wrap: wrap; }
+    .btn-delete{ margin-left: 0; width: 100%; justify-content: center; }
+    .btn-copy{ width: 100%; justify-content: center; }
   }
 </style>
 </head>
@@ -206,56 +272,94 @@
     <div class="dial" aria-hidden="true"></div>
     <div class="wordmark">Prompt<span>Vault</span></div>
   </div>
-  <div class="entry-count" id="entryCount">— entradas seladas</div>
+  <div class="entry-badge" id="entryCount">000 Entradas</div>
 </header>
 
-<div class="main-wrapper">
+<main class="main-wrapper">
 
-  <p class="eyebrow">Nova entrada</p>
-  <form class="form-container" id="vaultForm" autocomplete="off">
-    <label class="field-label" for="titulo">Título</label>
-    <input type="text" id="titulo" placeholder="Ex.: Prompt para thumbnail cinematográfica" required>
-
-    <label class="field-label" for="conteudo">Conteúdo</label>
-    <textarea id="conteudo" placeholder="Cole o prompt aqui..." rows="3" required></textarea>
-
-    <label class="field-label" for="mediaInput">Anexo (imagem ou vídeo)</label>
-    <div class="file-row">
-      <i class="fa-solid fa-paperclip" aria-hidden="true"></i>
-      <input type="file" id="mediaInput" accept="image/*,video/*">
-      <span class="file-name" id="fileName"></span>
-    </div>
-
-    <button type="submit" id="btnSalvar"><i class="fa-solid fa-lock" aria-hidden="true"></i> Selar no cofre</button>
-    <div class="hint" id="hint"></div>
-  </form>
-
-  <p class="eyebrow">Cofre</p>
-  <div id="listaPrompts">
-    <div class="state-msg"><i class="fa-solid fa-vault" aria-hidden="true"></i>Carregando o cofre…</div>
+  <div class="eyebrow-container">
+    <p class="eyebrow">Nova Entrada</p>
   </div>
 
+  <form class="form-container" id="vaultForm" autocomplete="off">
+    <label class="field-label" for="titulo">Título do Prompt</label>
+    <input type="text" id="titulo" placeholder="Ex.: Iluminação Cinematográfica para Midjourney" required>
+
+    <label class="field-label" for="conteudo">Prompt Completo</label>
+    <textarea id="conteudo" placeholder="Cole as instruções detalhadas do seu prompt aqui..." rows="4" required></textarea>
+
+    <label class="field-label">Anexo de Referência (Imagem ou Vídeo)</label>
+    <div class="file-dropzone" id="dropzone">
+      <div class="file-info">
+        <i class="fa-solid fa-paperclip" aria-hidden="true"></i>
+        <span id="fileNameDisplay">Clique ou arraste um arquivo de mídia</span>
+      </div>
+      <button type="button" class="btn-remove-file" id="btnRemoveFile" title="Remover arquivo">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <input type="file" id="mediaInput" accept="image/*,video/*">
+    </div>
+
+    <button type="submit" id="btnSalvar">
+      <i class="fa-solid fa-lock" aria-hidden="true"></i> Selar Entrada no Cofre
+    </button>
+    <div class="hint" id="hint" role="alert"></div>
+  </form>
+
+  <div class="eyebrow-container">
+    <p class="eyebrow">Cofre de Prompts</p>
+  </div>
+
+  <div class="vault-controls">
+    <div class="search-box">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input type="text" id="searchInput" placeholder="Buscar por título ou conteúdo...">
+    </div>
+  </div>
+
+  <div id="listaPrompts">
+    <div class="state-msg"><i class="fa-solid fa-circle-notch fa-spin"></i>Acessando o cofre…</div>
+  </div>
+
+</main>
+
+<div class="toast" id="toast" role="status" aria-live="polite">
+  <i class="fa-solid fa-check" aria-hidden="true"></i>
+  <span id="toastMsg"></span>
 </div>
 
-<div class="toast" id="toast" role="status" aria-live="polite"><i class="fa-solid fa-check" aria-hidden="true"></i><span id="toastMsg"></span></div>
-
 <script>
-  /* ---------- IndexedDB ---------- */
+  /* ---------- Configuração do IndexedDB (v2 Atualizada) ---------- */
   const DB_NAME = 'PromptVaultDB';
-  const DB_VERSION = 1;
+  const DB_VERSION = 2; // Atualizado para suporte a índices
   const STORE_NAME = 'entries';
 
   let dbPromise = null;
+
   function getDB(){
     if (dbPromise) return dbPromise;
     dbPromise = new Promise((resolve, reject) => {
       const req = indexedDB.open(DB_NAME, DB_VERSION);
-      req.onerror = () => reject(new Error('Não foi possível abrir o banco de dados.'));
+      
+      req.onerror = () => reject(new Error('Erro ao conectar ao IndexedDB local.'));
+      
       req.onsuccess = () => resolve(req.result);
+      
       req.onupgradeneeded = (e) => {
         const db = e.target.result;
+        let store;
         if (!db.objectStoreNames.contains(STORE_NAME)) {
-          db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+          store = db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+        } else {
+          store = e.target.transaction.objectStore(STORE_NAME);
+        }
+        
+        // Adicionando índices para buscas eficientes
+        if (!store.indexNames.contains('titulo')) {
+          store.createIndex('titulo', 'titulo', { unique: false });
+        }
+        if (!store.indexNames.contains('createdAt')) {
+          store.createIndex('createdAt', 'createdAt', { unique: false });
         }
       };
     });
@@ -299,20 +403,24 @@
     });
   }
 
-  /* ---------- DOM refs ---------- */
-  const vaultForm   = document.getElementById('vaultForm');
-  const tituloEl    = document.getElementById('titulo');
-  const conteudoEl  = document.getElementById('conteudo');
-  const btnSalvar   = document.getElementById('btnSalvar');
-  const listaPrompts= document.getElementById('listaPrompts');
-  const hint        = document.getElementById('hint');
-  const entryCount  = document.getElementById('entryCount');
-  const mediaInput  = document.getElementById('mediaInput');
-  const fileNameEl  = document.getElementById('fileName');
-  const toast       = document.getElementById('toast');
-  const toastMsg    = document.getElementById('toastMsg');
+  /* ---------- Elementos DOM ---------- */
+  const vaultForm       = document.getElementById('vaultForm');
+  const tituloEl        = document.getElementById('titulo');
+  const conteudoEl      = document.getElementById('conteudo');
+  const btnSalvar       = document.getElementById('btnSalvar');
+  const listaPrompts    = document.getElementById('listaPrompts');
+  const hint            = document.getElementById('hint');
+  const entryCount      = document.getElementById('entryCount');
+  const mediaInput      = document.getElementById('mediaInput');
+  const fileNameDisplay = document.getElementById('fileNameDisplay');
+  const btnRemoveFile   = document.getElementById('btnRemoveFile');
+  const searchInput     = document.getElementById('searchInput');
+  const toast           = document.getElementById('toast');
+  const toastMsg        = document.getElementById('toastMsg');
 
-  /* ---------- Utils ---------- */
+  let entriesCache = [];
+
+  /* ---------- Métodos Auxiliares ---------- */
   function escapeHtml(str){
     if (typeof str !== 'string') return '';
     return str
@@ -330,50 +438,67 @@
       .replace(/>/g,'&gt;')
       .replace(/"/g,'&quot;')
       .replace(/'/g,'&#39;')
-      .replace(/\n/g,'&#10;')
-      .replace(/\r/g,'&#13;');
+      .replace(/\n/g,'&#10;');
   }
 
-  function showToast(msg, iconClass){
+  function showToast(msg, iconClass = 'fa-check'){
     toastMsg.textContent = msg;
     const icon = toast.querySelector('i');
-    icon.className = 'fa-solid ' + (iconClass || 'fa-check');
+    icon.className = 'fa-solid ' + iconClass;
     toast.classList.add('show');
     clearTimeout(showToast._t);
-    showToast._t = setTimeout(() => toast.classList.remove('show'), 2200);
+    showToast._t = setTimeout(() => toast.classList.remove('show'), 2400);
   }
 
   function lerArquivo(file){
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = e => resolve(e.target.result);
-      reader.onerror = () => reject(new Error('Falha ao ler o arquivo.'));
+      reader.onerror = () => reject(new Error('Erro na leitura do arquivo selecionado.'));
       reader.readAsArrayBuffer(file);
     });
+  }
+
+  function resetFileInput(){
+    mediaInput.value = '';
+    fileNameDisplay.textContent = 'Clique ou arraste um arquivo de mídia';
+    fileNameDisplay.classList.remove('file-name');
+    btnRemoveFile.style.display = 'none';
   }
 
   /* ---------- Eventos ---------- */
   mediaInput.addEventListener('change', () => {
     const file = mediaInput.files[0];
-    fileNameEl.textContent = file ? file.name : '';
+    if (file) {
+      fileNameDisplay.textContent = file.name;
+      fileNameDisplay.classList.add('file-name');
+      btnRemoveFile.style.display = 'block';
+    } else {
+      resetFileInput();
+    }
+  });
+
+  btnRemoveFile.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    resetFileInput();
   });
 
   vaultForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     hint.textContent = '';
-    hint.classList.remove('ok');
 
     const titulo   = tituloEl.value.trim();
     const conteudo = conteudoEl.value.trim();
 
     if (!titulo || !conteudo){
-      hint.textContent = 'Preencha título e conteúdo antes de selar a entrada.';
+      hint.textContent = 'Preencha o título e o conteúdo antes de selar.';
       return;
     }
 
-    const originalBtnHTML = btnSalvar.innerHTML;
+    const originalText = btnSalvar.innerHTML;
     btnSalvar.disabled = true;
-    btnSalvar.innerHTML = '<i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i> Selando…';
+    btnSalvar.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processando e Selando…';
 
     try {
       let mediaBlob = null;
@@ -396,21 +521,20 @@
       };
 
       await saveEntry(entry);
-
       vaultForm.reset();
-      fileNameEl.textContent = '';
-      showToast('Entrada selada com sucesso.');
-
+      resetFileInput();
+      showToast('Entrada salva e criptografada localmente.');
       await carregar();
     } catch (err) {
       console.error(err);
-      hint.textContent = 'Erro ao salvar: ' + (err.message || 'Tente novamente.');
+      hint.textContent = 'Falha ao salvar entrada: ' + (err.message || 'Erro desconhecido.');
     } finally {
       btnSalvar.disabled = false;
-      btnSalvar.innerHTML = originalBtnHTML;
+      btnSalvar.innerHTML = originalText;
     }
   });
 
+  // Delegar Ações nos Cards
   listaPrompts.addEventListener('click', async (e) => {
     const btn = e.target.closest('button');
     if (!btn) return;
@@ -418,74 +542,94 @@
     if (!id) return;
 
     if (btn.classList.contains('btn-delete')){
-      if (!confirm('Excluir esta entrada do cofre? Esta ação não pode ser desfeita.')) return;
+      if (!confirm('Tem certeza de que deseja remover permanentemente esta entrada do cofre?')) return;
       try {
         await deleteEntry(id);
-        showToast('Entrada excluída.', 'fa-trash');
+        showToast('Entrada removida com sucesso.', 'fa-trash-can');
         await carregar();
       } catch (err) {
-        hint.textContent = 'Erro ao excluir entrada.';
+        showToast('Erro ao remover entrada.', 'fa-triangle-exclamation');
       }
     } else if (btn.classList.contains('btn-copy')){
       const texto = btn.dataset.texto || '';
       try {
         await navigator.clipboard.writeText(texto);
-        const original = btn.innerHTML;
-        btn.innerHTML = '<i class="fa-solid fa-check" aria-hidden="true"></i> Copiado';
-        showToast('Conteúdo copiado para a área de transferência.');
-        setTimeout(() => btn.innerHTML = original, 1400);
+        const originalContent = btn.innerHTML;
+        btn.innerHTML = '<i class="fa-solid fa-check"></i> Copiado!';
+        showToast('Prompt copiado para a área de transferência.');
+        setTimeout(() => btn.innerHTML = originalContent, 1600);
       } catch (err) {
-        showToast('Não foi possível copiar automaticamente.', 'fa-triangle-exclamation');
+        showToast('Erro ao copiar automaticamente.', 'fa-triangle-exclamation');
       }
     }
   });
 
-  /* ---------- Render ---------- */
+  // Busca em tempo real
+  searchInput.addEventListener('input', () => {
+    const term = searchInput.value.toLowerCase().trim();
+    if (!term) {
+      renderizar(entriesCache);
+      return;
+    }
+    const filtered = entriesCache.filter(item => 
+      item.titulo.toLowerCase().includes(term) || 
+      item.conteudo.toLowerCase().includes(term)
+    );
+    renderizar(filtered, true);
+  });
+
+  /* ---------- Renderização ---------- */
   let _mediaURLs = [];
 
-  function renderizar(entries){
-    entryCount.textContent = String(entries.length).padStart(3,'0') + ' entradas seladas';
+  function renderizar(entries, isSearching = false){
+    entryCount.textContent = `${String(entriesCache.length).padStart(3, '0')} Entradas`;
 
+    // Revogar URLs antigas da memória
     _mediaURLs.forEach(url => URL.revokeObjectURL(url));
     _mediaURLs = [];
 
     if (entries.length === 0){
       listaPrompts.innerHTML = `
         <div class="state-msg">
-          <i class="fa-solid fa-vault" aria-hidden="true"></i>
-          O cofre está vazio.
-          <div class="sub">Adicione seu primeiro prompt no formulário acima.</div>
+          <i class="fa-solid ${isSearching ? 'fa-magnifying-glass' : 'fa-vault'}"></i>
+          ${isSearching ? 'Nenhum resultado encontrado para a busca.' : 'O cofre está totalmente vazio.'}
+          <div class="sub">${isSearching ? 'Tente buscar com outros termos.' : 'Crie sua primeira entrada utilizando o formulário acima.'}</div>
         </div>`;
       return;
     }
 
     listaPrompts.innerHTML = entries.map((p, i) => {
-      const numero = String(i + 1).padStart(3,'0');
-      let media = '';
+      const numero = String(entriesCache.length - entriesCache.findIndex(e => e.id === p.id)).padStart(3, '0');
+      let mediaHTML = '';
 
       if (p.mediaBlob) {
         const url = URL.createObjectURL(p.mediaBlob);
         _mediaURLs.push(url);
         const isVideo = (p.mediaType || '').startsWith('video/');
-        if (isVideo) {
-          media = '<video src="' + url + '" class="media-preview" controls preload="metadata" aria-label="Vídeo anexado à entrada ' + escapeAttr(p.titulo) + '"></video>';
-        } else {
-          media = '<img src="' + url + '" class="media-preview" alt="Anexo de ' + escapeAttr(p.titulo) + '" loading="lazy">';
-        }
+        
+        mediaHTML = `
+          <div class="media-wrapper">
+            ${isVideo 
+              ? `<video src="${url}" class="media-preview" controls preload="metadata"></video>`
+              : `<img src="${url}" class="media-preview" alt="Anexo de ${escapeAttr(p.titulo)}" loading="lazy">`
+            }
+          </div>`;
       }
 
       return `
         <article class="prompt-card">
-          <span class="ledger-no">N&deg; ${numero}</span>
-          <h3 class="card-title">${escapeHtml(p.titulo)}</h3>
-          <p class="card-body">${escapeHtml(p.conteudo)}</p>
-          ${media}
+          <div class="card-header">
+            <h3 class="card-title">${escapeHtml(p.titulo)}</h3>
+            <span class="ledger-no">N&deg; ${numero}</span>
+          </div>
+          <div class="card-body">${escapeHtml(p.conteudo)}</div>
+          ${mediaHTML}
           <div class="card-actions">
-            <button class="btn-copy" data-id="${p.id}" data-texto="${escapeAttr(p.conteudo)}" aria-label="Copiar conteúdo da entrada ${escapeAttr(p.titulo)}">
-              <i class="fa-solid fa-copy" aria-hidden="true"></i>Copiar
+            <button class="btn-copy" data-id="${p.id}" data-texto="${escapeAttr(p.conteudo)}" aria-label="Copiar prompt">
+              <i class="fa-solid fa-copy"></i> Copiar Prompt
             </button>
-            <button class="btn-delete" data-id="${p.id}" aria-label="Excluir entrada ${escapeAttr(p.titulo)}">
-              <i class="fa-solid fa-trash" aria-hidden="true"></i>Excluir
+            <button class="btn-delete" data-id="${p.id}" aria-label="Excluir entrada">
+              <i class="fa-solid fa-trash-can"></i> Excluir
             </button>
           </div>
         </article>`;
@@ -494,19 +638,29 @@
 
   async function carregar(){
     try {
-      const entries = await loadEntries();
-      renderizar(entries);
+      entriesCache = await loadEntries();
+      const searchTerm = searchInput.value.toLowerCase().trim();
+      if (searchTerm) {
+        const filtered = entriesCache.filter(item => 
+          item.titulo.toLowerCase().includes(searchTerm) || 
+          item.conteudo.toLowerCase().includes(searchTerm)
+        );
+        renderizar(filtered, true);
+      } else {
+        renderizar(entriesCache);
+      }
     } catch (err) {
       console.error(err);
       listaPrompts.innerHTML = `
         <div class="state-msg">
-          <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
-          Erro ao carregar o cofre.
-          <div class="sub">Recarregue a página ou verifique as permissões do navegador.</div>
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          Não foi possível carregar os dados do cofre.
+          <div class="sub">Verifique se o seu navegador permite armazenamento local de dados.</div>
         </div>`;
     }
   }
 
+  // Inicialização
   carregar();
 </script>
 </body>
