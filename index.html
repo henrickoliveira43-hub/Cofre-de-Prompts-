@@ -333,7 +333,7 @@
   </div>
 
   <div id="listaPrompts">
-    <div class="state-msg"><i class="fa-solid fa-circle-notch fa-spin"></i>Acessando o cofre…</div>
+    <div class="state-msg"><i class="fa-solid fa-circle-notch fa-spin"></i>Acessando o cofre na nuvem…</div>
   </div>
 
 </main>
@@ -343,78 +343,31 @@
   <span id="toastMsg"></span>
 </div>
 
-<script>
-  /* ---------- Configuração do IndexedDB ---------- */
-  const DB_NAME = 'PromptVaultDB';
-  const DB_VERSION = 2;
-  const STORE_NAME = 'entries';
+<!-- SDKs do Firebase via CDN (Módulos ES) -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { 
+    getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc 
+  } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+  import { 
+    getStorage, ref, uploadBytes, getDownloadURL, deleteObject 
+  } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
-  let dbPromise = null;
+  // Sua Configuração do Firebase
+  const firebaseConfig = {
+    apiKey: "AIzaSyDNKgpaOCQ00RVxELsjAh3zoQZr3_PCis4",
+    authDomain: "cofre-de-prompts.firebaseapp.com",
+    projectId: "cofre-de-prompts",
+    storageBucket: "cofre-de-prompts.firebasestorage.app",
+    messagingSenderId: "503764090683",
+    appId: "1:503764090683:web:f9f9c7600a4846e030c11e"
+  };
 
-  function getDB(){
-    if (dbPromise) return dbPromise;
-    dbPromise = new Promise((resolve, reject) => {
-      const req = indexedDB.open(DB_NAME, DB_VERSION);
-      
-      req.onerror = () => reject(new Error('Erro ao conectar ao IndexedDB local.'));
-      req.onsuccess = () => resolve(req.result);
-      
-      req.onupgradeneeded = (e) => {
-        const db = e.target.result;
-        let store;
-        if (!db.objectStoreNames.contains(STORE_NAME)) {
-          store = db.createObjectStore(STORE_NAME, { keyPath: 'id' });
-        } else {
-          store = e.target.transaction.objectStore(STORE_NAME);
-        }
-        
-        if (!store.indexNames.contains('titulo')) {
-          store.createIndex('titulo', 'titulo', { unique: false });
-        }
-        if (!store.indexNames.contains('createdAt')) {
-          store.createIndex('createdAt', 'createdAt', { unique: false });
-        }
-      };
-    });
-    return dbPromise;
-  }
-
-  async function loadEntries(){
-    const db = await getDB();
-    return new Promise((resolve, reject) => {
-      const tx = db.transaction(STORE_NAME, 'readonly');
-      const store = tx.objectStore(STORE_NAME);
-      const req = store.getAll();
-      req.onsuccess = () => {
-        const data = req.result || [];
-        data.sort((a, b) => b.id - a.id);
-        resolve(data);
-      };
-      req.onerror = () => reject(req.error);
-    });
-  }
-
-  async function saveEntry(entry){
-    const db = await getDB();
-    return new Promise((resolve, reject) => {
-      const tx = db.transaction(STORE_NAME, 'readwrite');
-      const store = tx.objectStore(STORE_NAME);
-      const req = store.put(entry);
-      req.onsuccess = () => resolve(true);
-      req.onerror = () => reject(req.error);
-    });
-  }
-
-  async function deleteEntry(id){
-    const db = await getDB();
-    return new Promise((resolve, reject) => {
-      const tx = db.transaction(STORE_NAME, 'readwrite');
-      const store = tx.objectStore(STORE_NAME);
-      const req = store.delete(id);
-      req.onsuccess = () => resolve(true);
-      req.onerror = () => reject(req.error);
-    });
-  }
+  // Inicializa o Firebase
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const storage = getStorage(app);
+  const COLLECTION_NAME = 'entries';
 
   /* ---------- Elementos DOM ---------- */
   const vaultForm       = document.getElementById('vaultForm');
@@ -464,15 +417,6 @@
     showToast._t = setTimeout(() => toast.classList.remove('show'), 2400);
   }
 
-  function lerArquivo(file){
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = e => resolve(e.target.result);
-      reader.onerror = () => reject(new Error('Erro na leitura do arquivo selecionado.'));
-      reader.readAsArrayBuffer(file);
-    });
-  }
-
   function resetFileInput(){
     mediaInput.value = '';
     fileNameDisplay.textContent = 'Clique ou arraste um arquivo de mídia';
@@ -480,7 +424,7 @@
     btnRemoveFile.style.display = 'none';
   }
 
-  /* ---------- Suporte a Drag & Drop Visual ---------- */
+  /* ---------- Drag & Drop ---------- */
   ['dragenter', 'dragover'].forEach(eventName => {
     dropzone.addEventListener(eventName, (e) => {
       e.preventDefault(); e.stopPropagation();
@@ -495,7 +439,6 @@
     }, false);
   });
 
-  /* ---------- Eventos ---------- */
   mediaInput.addEventListener('change', () => {
     const file = mediaInput.files[0];
     if (file) {
@@ -508,11 +451,13 @@
   });
 
   btnRemoveFile.addEventListener('click', (e) => {
-    e.preventDefault();
-    e.stopPropagation();
+    e.preventDefault(); e.stopPropagation();
     resetFileInput();
   });
 
+  /* ---------- Operações no Firebase ---------- */
+
+  // Salvar entrada no Firestore + Storage
   vaultForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     hint.textContent = '';
@@ -527,56 +472,71 @@
 
     const originalText = btnSalvar.innerHTML;
     btnSalvar.disabled = true;
-    btnSalvar.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processando e Selando…';
+    btnSalvar.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Salvando na nuvem…';
 
     try {
-      let mediaBlob = null;
+      let mediaUrl = null;
+      let storagePath = null;
       let mediaType = null;
 
+      // Upload de arquivo para o Firebase Storage
       if (mediaInput.files.length > 0){
         const file = mediaInput.files[0];
         mediaType = file.type || 'application/octet-stream';
-        const buffer = await lerArquivo(file);
-        mediaBlob = new Blob([buffer], { type: mediaType });
+        const fileExtension = file.name.split('.').pop();
+        storagePath = `prompts/${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${fileExtension}`;
+        
+        const storageRef = ref(storage, storagePath);
+        await uploadBytes(storageRef, file);
+        mediaUrl = await getDownloadURL(storageRef);
       }
 
-      const entry = {
-        id: Date.now(),
+      // Adiciona o documento ao Cloud Firestore
+      await addDoc(collection(db, COLLECTION_NAME), {
         titulo,
         conteudo,
-        mediaBlob,
+        mediaUrl,
+        storagePath,
         mediaType,
         createdAt: new Date().toISOString()
-      };
+      });
 
-      await saveEntry(entry);
       vaultForm.reset();
       resetFileInput();
-      showToast('Entrada salva e criptografada localmente.');
-      await carregar();
+      showToast('Entrada selada e salva na nuvem com sucesso!');
     } catch (err) {
       console.error(err);
-      hint.textContent = 'Falha ao salvar entrada: ' + (err.message || 'Erro desconhecido.');
+      hint.textContent = 'Falha ao salvar entrada no Firebase: ' + (err.message || 'Erro desconhecido.');
     } finally {
       btnSalvar.disabled = false;
       btnSalvar.innerHTML = originalText;
     }
   });
 
-  // Delegar Ações nos Cards
+  // Ações do Card (Copiar e Deletar)
   listaPrompts.addEventListener('click', async (e) => {
     const btn = e.target.closest('button');
     if (!btn) return;
-    const id = parseInt(btn.dataset.id, 10);
-    if (!id) return;
+    const docId = btn.dataset.id;
+    if (!docId) return;
 
     if (btn.classList.contains('btn-delete')){
-      if (!confirm('Tem certeza de que deseja remover permanentemente esta entrada do cofre?')) return;
+      if (!confirm('Tem certeza de que deseja remover permanentemente esta entrada da nuvem?')) return;
+      
+      const entryToDelete = entriesCache.find(item => item.id === docId);
+      
       try {
-        await deleteEntry(id);
-        showToast('Entrada removida com sucesso.', 'fa-trash-can');
-        await carregar();
+        // Se houver arquivo anexo no Storage, apague-o primeiro
+        if (entryToDelete && entryToDelete.storagePath) {
+          const fileRef = ref(storage, entryToDelete.storagePath);
+          await deleteObject(fileRef).catch(err => console.warn('Erro ao deletar anexo:', err));
+        }
+
+        // Deleta o documento do Firestore
+        await deleteDoc(doc(db, COLLECTION_NAME, docId));
+        showToast('Entrada removida da nuvem.', 'fa-trash-can');
       } catch (err) {
+        console.error(err);
         showToast('Erro ao remover entrada.', 'fa-triangle-exclamation');
       }
     } else if (btn.classList.contains('btn-copy')){
@@ -593,7 +553,7 @@
     }
   });
 
-  // Busca em tempo real
+  // Busca Local
   searchInput.addEventListener('input', () => {
     const term = searchInput.value.toLowerCase().trim();
     if (!term) {
@@ -607,39 +567,32 @@
     renderizar(filtered, true);
   });
 
-  /* ---------- Renderização ---------- */
-  let _mediaURLs = [];
-
+  /* ---------- Renderização e Listener em Tempo Real (onSnapshot) ---------- */
   function renderizar(entries, isSearching = false){
     entryCount.textContent = `${String(entriesCache.length).padStart(3, '0')} Entradas`;
-
-    _mediaURLs.forEach(url => URL.revokeObjectURL(url));
-    _mediaURLs = [];
 
     if (entries.length === 0){
       listaPrompts.innerHTML = `
         <div class="state-msg">
           <i class="fa-solid ${isSearching ? 'fa-magnifying-glass' : 'fa-vault'}"></i>
-          ${isSearching ? 'Nenhum resultado encontrado para a busca.' : 'O cofre está totalmente vazio.'}
-          <div class="sub">${isSearching ? 'Tente buscar com outros termos.' : 'Crie sua primeira entrada utilizando o formulário acima.'}</div>
+          ${isSearching ? 'Nenhum resultado encontrado para a busca.' : 'O cofre na nuvem está vazio.'}
+          <div class="sub">${isSearching ? 'Tente buscar por outros termos.' : 'Crie sua primeira entrada utilizando o formulário acima.'}</div>
         </div>`;
       return;
     }
 
-    listaPrompts.innerHTML = entries.map((p) => {
+    listaPrompts.innerHTML = entries.map((p, index) => {
       const numero = String(entriesCache.length - entriesCache.findIndex(e => e.id === p.id)).padStart(3, '0');
       let mediaHTML = '';
 
-      if (p.mediaBlob) {
-        const url = URL.createObjectURL(p.mediaBlob);
-        _mediaURLs.push(url);
+      if (p.mediaUrl) {
         const isVideo = (p.mediaType || '').startsWith('video/');
         
         mediaHTML = `
           <div class="media-wrapper">
             ${isVideo 
-              ? `<video src="${url}" class="media-preview" controls preload="metadata"></video>`
-              : `<img src="${url}" class="media-preview" alt="Anexo de ${escapeAttr(p.titulo)}" loading="lazy">`
+              ? `<video src="${p.mediaUrl}" class="media-preview" controls preload="metadata"></video>`
+              : `<img src="${p.mediaUrl}" class="media-preview" alt="Anexo de ${escapeAttr(p.titulo)}" loading="lazy">`
             }
           </div>`;
       }
@@ -664,9 +617,16 @@
     }).join('');
   }
 
-  async function carregar(){
-    try {
-      entriesCache = await loadEntries();
+  // Monitora alterações no Firestore em Tempo Real
+  function escutarColecao(){
+    const q = query(collection(db, COLLECTION_NAME), orderBy('createdAt', 'desc'));
+    
+    onSnapshot(q, (snapshot) => {
+      entriesCache = snapshot.docs.map(docSnap => ({
+        id: docSnap.id,
+        ...docSnap.data()
+      }));
+
       const searchTerm = searchInput.value.toLowerCase().trim();
       if (searchTerm) {
         const filtered = entriesCache.filter(item => 
@@ -677,18 +637,19 @@
       } else {
         renderizar(entriesCache);
       }
-    } catch (err) {
-      console.error(err);
+    }, (error) => {
+      console.error("Erro ao sincronizar Firestore:", error);
       listaPrompts.innerHTML = `
         <div class="state-msg">
           <i class="fa-solid fa-triangle-exclamation"></i>
-          Não foi possível carregar os dados do cofre.
-          <div class="sub">Verifique se o seu navegador permite armazenamento local de dados.</div>
+          Erro ao conectar com o banco de dados na nuvem.
+          <div class="sub">Verifique as regras de segurança do seu Firebase (Firestore e Storage).</div>
         </div>`;
-    }
+    });
   }
 
-  carregar();
+  // Inicialização do ouvinte em tempo real
+  escutarColecao();
 </script>
 </body>
 </html>
