@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>PromptVault — Cofre Pessoal de Prompts</title>
+<title>PromptVault — Cofre Pessoal de Prompts v2.0</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -265,6 +265,11 @@
   }
   textarea { resize: vertical; min-height: 120px; }
 
+  .text-stats {
+    display: flex; gap: 16px; font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem; color: var(--text-dim); margin-top: 6px;
+  }
+
   .file-dropzone {
     position: relative;
     border: 1px dashed var(--hairline); border-radius: var(--radius);
@@ -303,10 +308,19 @@
 
   .hint { font-size: .82rem; color: var(--danger); margin-top: 12px; min-height: 1.2em; font-family: 'IBM Plex Mono', monospace; word-break: break-word; }
 
-  .vault-controls { display: flex; gap: 12px; margin-bottom: 28px; }
-  .search-box { flex: 1; position: relative; }
+  .vault-controls { display: flex; gap: 12px; margin-bottom: 28px; flex-wrap: wrap; }
+  .search-box { flex: 1; position: relative; min-width: 260px; }
   .search-box i { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-dim); font-size: .95rem; }
   .search-box input { padding-left: 44px; }
+
+  .backup-actions { display: flex; gap: 8px; }
+  .btn-backup {
+    background: var(--input-bg); border: 1px solid var(--hairline); color: var(--text-dim);
+    padding: 0 16px; border-radius: var(--radius); cursor: pointer; font-size: .85rem;
+    display: flex; align-items: center; gap: 8px; font-family: 'IBM Plex Mono', monospace;
+    transition: var(--transition); height: 48px;
+  }
+  .btn-backup:hover { border-color: var(--brass); color: var(--brass); background: var(--input-focus-bg); }
 
   #listaPrompts { 
     display: grid; 
@@ -335,7 +349,7 @@
   .prompt-card:hover { border-color: var(--hairline-hover); transform: translateY(-4px); box-shadow: var(--shadow-main); }
   @keyframes rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
 
-  .card-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 14px; }
+  .card-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 12px; }
   
   .ledger-no {
     background: var(--input-bg); border: 1px solid var(--hairline); border-radius: 6px;
@@ -346,6 +360,12 @@
   .card-title {
     font-family: 'Fraunces', serif; font-weight: 500; font-size: clamp(1.15rem, 1.8vw, 1.3rem); margin: 0;
     line-height: 1.35; color: var(--text); word-break: break-word; flex: 1;
+  }
+
+  .tag-pills { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+  .tag-pill {
+    background: var(--teal-bg); color: var(--teal); border: 1px solid rgba(77, 182, 172, 0.25);
+    font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; padding: 2px 8px; border-radius: 12px;
   }
 
   .card-body {
@@ -360,24 +380,52 @@
 
   .card-actions { 
     display: flex; 
-    gap: 10px; 
+    gap: 8px; 
     border-top: 1px solid var(--hairline); 
     padding-top: 16px; 
     margin-top: auto;
     flex-wrap: wrap;
   }
   .card-actions button {
-    border: none; border-radius: var(--radius-sm); padding: 10px 16px; font-size: .84rem;
+    border: none; border-radius: var(--radius-sm); padding: 10px 14px; font-size: .84rem;
     font-family: 'Space Grotesk', sans-serif; font-weight: 600; cursor: pointer;
-    display: flex; align-items: center; justify-content: center; gap: 8px; transition: var(--transition);
-    min-height: 44px; flex: 1 1 auto;
+    display: flex; align-items: center; justify-content: center; gap: 6px; transition: var(--transition);
+    min-height: 42px; flex: 1;
   }
   
   .btn-copy { background: var(--teal-bg); color: var(--teal); border: 1px solid rgba(77, 182, 172, 0.3) !important; }
   .btn-copy:hover { background: rgba(77, 182, 172, 0.25); }
   
-  .btn-delete { background: var(--danger-bg); color: var(--danger); border: 1px solid rgba(229, 115, 115, 0.3) !important; }
+  .btn-edit { background: var(--input-bg); color: var(--brass-bright); border: 1px solid var(--hairline) !important; }
+  .btn-edit:hover { border-color: var(--brass) !important; color: var(--brass); }
+
+  .btn-delete { background: var(--danger-bg); color: var(--danger); border: 1px solid rgba(229, 115, 115, 0.3) !important; flex: 0 0 auto !important; }
   .btn-delete:hover { background: rgba(229, 115, 115, 0.25); }
+
+  /* Modal de Edição */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    z-index: 2000; display: flex; align-items: center; justify-content: center;
+    padding: 20px; opacity: 0; pointer-events: none; transition: var(--transition);
+  }
+  .modal-overlay.active { opacity: 1; pointer-events: auto; }
+
+  .modal-card {
+    background: var(--panel); border: 1px solid var(--panel-border);
+    border-radius: var(--radius-lg); width: min(100%, 650px); max-height: 90vh;
+    overflow-y: auto; padding: clamp(20px, 4vw, 32px); box-shadow: var(--shadow-main);
+    transform: translateY(20px); transition: var(--transition);
+  }
+  .modal-overlay.active .modal-card { transform: translateY(0); }
+
+  .modal-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 20px; border-bottom: 1px solid var(--hairline); padding-bottom: 12px;
+  }
+  .modal-header h2 { font-family: 'Fraunces', serif; margin: 0; font-size: 1.35rem; color: var(--brass); }
+  .btn-close-modal { background: none; border: none; color: var(--text-dim); font-size: 1.2rem; cursor: pointer; }
+  .btn-close-modal:hover { color: var(--danger); }
 
   .toast {
     position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(100px);
@@ -385,7 +433,7 @@
     border: 1px solid var(--brass); color: var(--text);
     padding: 12px 24px; border-radius: 40px; font-size: .88rem; width: max-content; max-width: 90vw;
     box-shadow: var(--shadow-main); opacity: 0; pointer-events: none;
-    transition: var(--transition); z-index: 2000; display: flex; align-items: center; gap: 10px;
+    transition: var(--transition); z-index: 3000; display: flex; align-items: center; gap: 10px;
     text-align: center;
   }
   .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
@@ -398,6 +446,9 @@
     .card-actions { flex-direction: column; }
     .card-actions button { width: 100%; }
     .header-controls { gap: 6px; }
+    .vault-controls { flex-direction: column; }
+    .backup-actions { width: 100%; }
+    .btn-backup { flex: 1; justify-content: center; }
   }
 
   @media (min-width: 641px) and (max-width: 1024px) {
@@ -412,7 +463,6 @@
       --container-width: 1100px;
       --card-grid-cols: repeat(2, 1fr);
     }
-    .btn-delete { flex: 0 0 auto; }
   }
 </style>
 </head>
@@ -443,8 +493,15 @@
     <label class="field-label" for="titulo">Título do Prompt</label>
     <input type="text" id="titulo" placeholder="Ex.: Iluminação Cinematográfica para Midjourney" required>
 
+    <label class="field-label" for="tags">Tags / Categorias (Separadas por vírgula)</label>
+    <input type="text" id="tags" placeholder="Ex.: midjourney, imagem, iluminação, cinema">
+
     <label class="field-label" for="conteudo">Prompt Completo</label>
     <textarea id="conteudo" placeholder="Cole as instruções detalhadas do seu prompt aqui..." rows="4" required></textarea>
+    <div class="text-stats">
+      <span id="charCount">0 caracteres</span> &bull;
+      <span id="wordCount">0 palavras</span>
+    </div>
 
     <label class="field-label">Anexo de Referência (Imagem ou Vídeo — Máx 10 MB)</label>
     <div class="file-dropzone" id="dropzone">
@@ -471,7 +528,16 @@
   <div class="vault-controls">
     <div class="search-box">
       <i class="fa-solid fa-magnifying-glass"></i>
-      <input type="text" id="searchInput" placeholder="Buscar por título ou conteúdo...">
+      <input type="text" id="searchInput" placeholder="Buscar por título, conteúdo ou tags...">
+    </div>
+    <div class="backup-actions">
+      <button type="button" class="btn-backup" id="btnExport" title="Exportar Backup JSON">
+        <i class="fa-solid fa-download"></i> Exportar
+      </button>
+      <button type="button" class="btn-backup" id="btnImport" title="Importar Backup JSON">
+        <i class="fa-solid fa-upload"></i> Importar
+      </button>
+      <input type="file" id="importInput" accept=".json" style="display: none;">
     </div>
   </div>
 
@@ -481,6 +547,41 @@
 
 </main>
 
+<!-- Modal de Edição -->
+<div class="modal-overlay" id="editModal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h2><i class="fa-solid fa-pen-to-square"></i> Editar Prompt</h2>
+      <button type="button" class="btn-close-modal" id="btnCloseModal"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <form id="editForm">
+      <input type="hidden" id="editDocId">
+      <label class="field-label" for="editTitulo">Título do Prompt</label>
+      <input type="text" id="editTitulo" required>
+
+      <label class="field-label" for="editTags">Tags (Separadas por vírgula)</label>
+      <input type="text" id="editTags">
+
+      <label class="field-label" for="editConteudo">Prompt Completo</label>
+      <textarea id="editConteudo" rows="5" required></textarea>
+
+      <label class="field-label">Substituir / Adicionar Mídia (Opcional)</label>
+      <div class="file-dropzone" id="editDropzone">
+        <div class="file-info">
+          <i class="fa-solid fa-paperclip"></i>
+          <span id="editFileNameDisplay">Escolher nova mídia...</span>
+        </div>
+        <button type="button" class="btn-remove-file" id="btnEditRemoveFile"><i class="fa-solid fa-xmark"></i></button>
+        <input type="file" id="editMediaInput" accept="image/*,video/*">
+      </div>
+
+      <button type="submit" id="btnSalvarEdicao" style="margin-top:20px;" class="btn-backup">
+        <i class="fa-solid fa-floppy-disk"></i> Salvar Alterações
+      </button>
+    </form>
+  </div>
+</div>
+
 <div class="toast" id="toast" role="status" aria-live="polite">
   <i class="fa-solid fa-check" aria-hidden="true"></i>
   <span id="toastMsg"></span>
@@ -489,7 +590,7 @@
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
   import { 
-    getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc 
+    getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, updateDoc 
   } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
   import { 
     getStorage, ref, uploadBytes, getDownloadURL, deleteObject 
@@ -506,6 +607,7 @@
 
   const vaultForm        = document.getElementById('vaultForm');
   const tituloEl         = document.getElementById('titulo');
+  const tagsEl           = document.getElementById('tags');
   const conteudoEl       = document.getElementById('conteudo');
   const btnSalvar        = document.getElementById('btnSalvar');
   const listaPrompts     = document.getElementById('listaPrompts');
@@ -522,6 +624,26 @@
   const themeIcon        = themeToggleBtn.querySelector('i');
   const storageModeBadge = document.getElementById('storageModeBadge');
   const htmlEl           = document.documentElement;
+
+  const charCount        = document.getElementById('charCount');
+  const wordCount        = document.getElementById('wordCount');
+
+  // Modal elementos
+  const editModal        = document.getElementById('editModal');
+  const btnCloseModal    = document.getElementById('btnCloseModal');
+  const editForm         = document.getElementById('editForm');
+  const editDocId        = document.getElementById('editDocId');
+  const editTitulo       = document.getElementById('editTitulo');
+  const editTags         = document.getElementById('editTags');
+  const editConteudo     = document.getElementById('editConteudo');
+  const editMediaInput   = document.getElementById('editMediaInput');
+  const editFileNameDisplay = document.getElementById('editFileNameDisplay');
+  const btnEditRemoveFile = document.getElementById('btnEditRemoveFile');
+
+  // Backup elementos
+  const btnExport        = document.getElementById('btnExport');
+  const btnImport        = document.getElementById('btnImport');
+  const importInput      = document.getElementById('importInput');
 
   let db = null;
   let storage = null;
@@ -542,6 +664,13 @@
   themeToggleBtn.addEventListener('click', () => {
     const currentTheme = htmlEl.getAttribute('data-theme');
     applyTheme(currentTheme === 'dark' ? 'light' : 'dark');
+  });
+
+  conteudoEl.addEventListener('input', () => {
+    const txt = conteudoEl.value;
+    charCount.textContent = `${txt.length} caracteres`;
+    const words = txt.trim() ? txt.trim().split(/\s+/).length : 0;
+    wordCount.textContent = `${words} palavras`;
   });
 
   function escapeHtml(str){
@@ -628,6 +757,7 @@
 
     const titulo   = tituloEl.value.trim();
     const conteudo = conteudoEl.value.trim();
+    const tags     = tagsEl.value.split(',').map(t => t.trim().toLowerCase()).filter(Boolean);
 
     if (!titulo || !conteudo){
       hint.textContent = 'Preencha o título e o conteúdo antes de selar.';
@@ -659,25 +789,26 @@
         }
 
         await addDoc(collection(db, 'entries'), {
-          titulo, conteudo, mediaUrl, storagePath, mediaType, createdAt: new Date().toISOString()
+          titulo, conteudo, tags, mediaUrl, storagePath, mediaType, createdAt: new Date().toISOString()
         });
 
         vaultForm.reset(); resetFileInput();
+        charCount.textContent = '0 caracteres'; wordCount.textContent = '0 palavras';
         showToast('Entrada salva na nuvem com sucesso!');
       } catch (err) {
         console.warn("Erro ao gravar no Firebase, alternando para armazenamento local:", err);
         fallbackToLocalStorage('Armazenamento em nuvem indisponível. Entrada salva localmente.');
-        salvarLocalmente(titulo, conteudo);
+        salvarLocalmente(titulo, conteudo, tags);
       }
     } else {
-      salvarLocalmente(titulo, conteudo);
+      salvarLocalmente(titulo, conteudo, tags);
     }
 
     btnSalvar.disabled = false;
     btnSalvar.innerHTML = originalText;
   });
 
-  function salvarLocalmente(titulo, conteudo) {
+  function salvarLocalmente(titulo, conteudo, tags = []) {
     const list = getLocalEntries();
     const file = mediaInput.files[0];
     if (file) {
@@ -685,27 +816,118 @@
       reader.onload = function(evt) {
         list.unshift({
           id: 'local_' + Date.now(),
-          titulo, conteudo,
+          titulo, conteudo, tags,
           mediaUrl: evt.target.result,
           mediaType: file.type,
           createdAt: new Date().toISOString()
         });
         saveLocalEntries(list);
         vaultForm.reset(); resetFileInput();
+        charCount.textContent = '0 caracteres'; wordCount.textContent = '0 palavras';
         showToast('Entrada selada localmente!');
       };
       reader.readAsDataURL(file);
     } else {
       list.unshift({
         id: 'local_' + Date.now(),
-        titulo, conteudo, mediaUrl: null, mediaType: null,
+        titulo, conteudo, tags, mediaUrl: null, mediaType: null,
         createdAt: new Date().toISOString()
       });
       saveLocalEntries(list);
       vaultForm.reset(); resetFileInput();
+      charCount.textContent = '0 caracteres'; wordCount.textContent = '0 palavras';
       showToast('Entrada selada localmente!');
     }
   }
+
+  // Modal de Edição
+  function abrirModalEdicao(id) {
+    const item = entriesCache.find(e => e.id === id);
+    if (!item) return;
+
+    editDocId.value = item.id;
+    editTitulo.value = item.titulo || '';
+    editTags.value = (item.tags || []).join(', ');
+    editConteudo.value = item.conteudo || '';
+    editMediaInput.value = '';
+    editFileNameDisplay.textContent = item.mediaUrl ? 'Alterar mídia anexada...' : 'Escolher mídia...';
+    
+    editModal.classList.add('active');
+  }
+
+  btnCloseModal.addEventListener('click', () => editModal.classList.remove('active'));
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') editModal.classList.remove('active');
+  });
+
+  editForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const id = editDocId.value;
+    const item = entriesCache.find(e => e.id === id);
+    if (!item) return;
+
+    const novoTitulo = editTitulo.value.trim();
+    const novoConteudo = editConteudo.value.trim();
+    const novasTags = editTags.value.split(',').map(t => t.trim().toLowerCase()).filter(Boolean);
+
+    if (isFirebaseAvailable && !id.startsWith('local_')) {
+      try {
+        let mediaUrl = item.mediaUrl || null;
+        let storagePath = item.storagePath || null;
+        let mediaType = item.mediaType || null;
+
+        if (editMediaInput.files.length > 0) {
+          const file = editMediaInput.files[0];
+          mediaType = file.type || 'application/octet-stream';
+          const ext = file.name.split('.').pop();
+          storagePath = `prompts/${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${ext}`;
+          
+          if (item.storagePath) {
+            await deleteObject(ref(storage, item.storagePath)).catch(() => {});
+          }
+
+          const storageRef = ref(storage, storagePath);
+          await uploadBytes(storageRef, file);
+          mediaUrl = await getDownloadURL(storageRef);
+        }
+
+        await updateDoc(doc(db, 'entries', id), {
+          titulo: novoTitulo, conteudo: novoConteudo, tags: novasTags, mediaUrl, storagePath, mediaType
+        });
+
+        showToast('Prompt atualizado com sucesso!');
+        editModal.classList.remove('active');
+      } catch (err) {
+        showToast('Erro ao atualizar no Firebase', 'fa-triangle-exclamation');
+      }
+    } else {
+      const list = getLocalEntries();
+      const idx = list.findIndex(e => e.id === id);
+      if (idx !== -1) {
+        list[idx].titulo = novoTitulo;
+        list[idx].conteudo = novoConteudo;
+        list[idx].tags = novasTags;
+
+        if (editMediaInput.files.length > 0) {
+          const file = editMediaInput.files[0];
+          const reader = new FileReader();
+          reader.onload = function(evt) {
+            list[idx].mediaUrl = evt.target.result;
+            list[idx].mediaType = file.type;
+            saveLocalEntries(list);
+            showToast('Prompt local atualizado!');
+            editModal.classList.remove('active');
+          };
+          reader.readAsDataURL(file);
+          return;
+        }
+
+        saveLocalEntries(list);
+        showToast('Prompt local atualizado!');
+        editModal.classList.remove('active');
+      }
+    }
+  });
 
   listaPrompts.addEventListener('click', async (e) => {
     const btn = e.target.closest('button');
@@ -713,7 +935,9 @@
     const docId = btn.dataset.id;
     if (!docId) return;
 
-    if (btn.classList.contains('btn-delete')){
+    if (btn.classList.contains('btn-edit')) {
+      abrirModalEdicao(docId);
+    } else if (btn.classList.contains('btn-delete')){
       if (!confirm('Tem certeza de que deseja remover esta entrada?')) return;
       
       if (isFirebaseAvailable && !docId.startsWith('local_')) {
@@ -747,6 +971,51 @@
     }
   });
 
+  // Exportar e Importar Backup
+  btnExport.addEventListener('click', () => {
+    if (entriesCache.length === 0) {
+      showToast('Nenhuma entrada para exportar.', 'fa-triangle-exclamation');
+      return;
+    }
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(entriesCache, null, 2));
+    const downloadAnchor = document.createElement('a');
+    downloadAnchor.setAttribute("href", dataStr);
+    downloadAnchor.setAttribute("download", `promptvault_backup_${new Date().toISOString().slice(0,10)}.json`);
+    document.body.appendChild(downloadAnchor);
+    downloadAnchor.click();
+    downloadAnchor.remove();
+    showToast('Backup exportado com sucesso!');
+  });
+
+  btnImport.addEventListener('click', () => importInput.click());
+
+  importInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = async (evt) => {
+      try {
+        const importedData = JSON.parse(evt.target.result);
+        if (!Array.isArray(importedData)) throw new Error('Formato inválido');
+
+        if (confirm(`Deseja importar ${importedData.length} entrada(s)?`)) {
+          const list = getLocalEntries();
+          importedData.forEach(item => {
+            if (!item.id) item.id = 'imported_' + Date.now() + Math.random().toString(36).substring(2, 5);
+            list.unshift(item);
+          });
+          saveLocalEntries(list);
+          showToast('Backup importado no armazenamento local!');
+        }
+      } catch (err) {
+        showToast('Arquivo JSON inválido.', 'fa-triangle-exclamation');
+      }
+    };
+    reader.readAsText(file);
+    importInput.value = '';
+  });
+
   searchInput.addEventListener('input', () => aplicarFiltroEExibir());
 
   function aplicarFiltroEExibir() {
@@ -757,7 +1026,8 @@
     }
     const filtered = entriesCache.filter(item => 
       (item.titulo || '').toLowerCase().includes(term) || 
-      (item.conteudo || '').toLowerCase().includes(term)
+      (item.conteudo || '').toLowerCase().includes(term) ||
+      (item.tags || []).some(t => t.toLowerCase().includes(term))
     );
     renderizar(filtered, true);
   }
@@ -790,20 +1060,28 @@
           </div>`;
       }
 
+      const tagsHTML = (p.tags && p.tags.length > 0)
+        ? `<div class="tag-pills">${p.tags.map(t => `<span class="tag-pill">#${escapeHtml(t)}</span>`).join('')}</div>`
+        : '';
+
       return `
         <article class="prompt-card">
           <div class="card-header">
             <h3 class="card-title">${escapeHtml(p.titulo)}</h3>
             <span class="ledger-no">N&deg; ${numero}</span>
           </div>
+          ${tagsHTML}
           <div class="card-body">${escapeHtml(p.conteudo)}</div>
           ${mediaHTML}
           <div class="card-actions">
             <button class="btn-copy" data-id="${p.id}" data-texto="${escapeAttr(p.conteudo)}" aria-label="Copiar prompt">
-              <i class="fa-solid fa-copy"></i> Copiar Prompt
+              <i class="fa-solid fa-copy"></i> Copiar
+            </button>
+            <button class="btn-edit" data-id="${p.id}" aria-label="Editar entrada">
+              <i class="fa-solid fa-pen-to-square"></i> Editar
             </button>
             <button class="btn-delete" data-id="${p.id}" aria-label="Excluir entrada">
-              <i class="fa-solid fa-trash-can"></i> Excluir
+              <i class="fa-solid fa-trash-can"></i>
             </button>
           </div>
         </article>`;
