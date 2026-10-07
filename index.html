@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -10,34 +10,82 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,700;1,9..144,400&family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #060908;
-    --panel: #0d1410;
-    --panel-sub: #090e0b;
-    --panel-card: #121c17;
+    --transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+    --header-height: clamp(65px, 8vh, 80px);
+    --container-width: min(92%, 1100px);
+    --card-grid-cols: 1fr;
+
+    --radius-lg: 16px;
+    --radius: 10px;
+    --radius-sm: 6px;
+  }
+
+  [data-theme="dark"] {
+    --bg: #050807;
+    --panel: rgba(13, 20, 16, 0.85);
+    --panel-border: rgba(212, 175, 55, 0.18);
+    --panel-card: rgba(18, 28, 23, 0.65);
     --hairline: rgba(201, 169, 97, 0.15);
-    --hairline-hover: rgba(201, 169, 97, 0.45);
+    --hairline-hover: rgba(212, 175, 55, 0.45);
+    
     --brass: #d4af37;
-    --brass-bright: #f3e5ab;
+    --brass-bright: #f5e6b3;
     --brass-dim: #6b5728;
-    --brass-glow: rgba(212, 175, 55, 0.25);
-    --text: #f0ebe1;
-    --text-dim: #8e9992;
+    --brass-glow: rgba(212, 175, 55, 0.22);
+    
+    --text: #f3efe6;
+    --text-dim: #909c95;
     --text-placeholder: #525a55;
+    
     --teal: #4db6ac;
     --teal-bg: rgba(77, 182, 172, 0.12);
     --danger: #e57373;
     --danger-bg: rgba(229, 115, 115, 0.12);
-    --shadow-main: 0 20px 50px rgba(0, 0, 0, 0.85);
-    --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.5);
-    --radius-lg: 12px;
-    --radius: 8px;
-    --radius-sm: 4px;
-    --transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    --warning: #ffb74d;
+    --warning-bg: rgba(255, 183, 77, 0.12);
+    
+    --shadow-main: 0 24px 48px rgba(0, 0, 0, 0.85);
+    --shadow-card: 0 12px 32px rgba(0, 0, 0, 0.5);
+    --bg-gradient: radial-gradient(1000px 600px at 50% -10%, rgba(212, 175, 55, 0.1), transparent 70%),
+                   radial-gradient(800px 500px at 90% 90%, rgba(77, 182, 172, 0.04), transparent 60%),
+                   var(--bg);
+    --input-bg: rgba(0, 0, 0, 0.45);
+    --input-focus-bg: rgba(0, 0, 0, 0.65);
+    --code-bg: rgba(0, 0, 0, 0.35);
+  }
 
-    /* Variáveis Adaptativas de Layout */
-    --header-height: clamp(65px, 8vh, 80px);
-    --container-width: min(92%, 1100px);
-    --card-grid-cols: 1fr;
+  [data-theme="light"] {
+    --bg: #f5f3ee;
+    --panel: rgba(255, 255, 255, 0.9);
+    --panel-border: rgba(184, 148, 45, 0.25);
+    --panel-card: rgba(255, 255, 255, 0.95);
+    --hairline: rgba(184, 148, 45, 0.2);
+    --hairline-hover: rgba(184, 148, 45, 0.6);
+    
+    --brass: #9e7b12;
+    --brass-bright: #b8942d;
+    --brass-dim: #d4af37;
+    --brass-glow: rgba(184, 148, 45, 0.15);
+    
+    --text: #1a211d;
+    --text-dim: #5c6660;
+    --text-placeholder: #949c96;
+    
+    --teal: #00796b;
+    --teal-bg: rgba(0, 121, 107, 0.08);
+    --danger: #d32f2f;
+    --danger-bg: rgba(211, 47, 47, 0.08);
+    --warning: #f57c00;
+    --warning-bg: rgba(245, 124, 0, 0.1);
+    
+    --shadow-main: 0 20px 40px rgba(0, 0, 0, 0.08);
+    --shadow-card: 0 8px 20px rgba(0, 0, 0, 0.05);
+    --bg-gradient: radial-gradient(1000px 600px at 50% -10%, rgba(212, 175, 55, 0.12), transparent 70%),
+                   radial-gradient(800px 500px at 90% 90%, rgba(77, 182, 172, 0.08), transparent 60%),
+                   var(--bg);
+    --input-bg: rgba(255, 255, 255, 0.9);
+    --input-focus-bg: #ffffff;
+    --code-bg: rgba(0, 0, 0, 0.04);
   }
 
   * { box-sizing: border-box; }
@@ -45,10 +93,7 @@
   body {
     margin: 0;
     min-height: 100vh;
-    background:
-      radial-gradient(1200px 500px at 50% -5%, rgba(212, 175, 55, 0.08), transparent 70%),
-      radial-gradient(800px 500px at 85% 90%, rgba(77, 182, 172, 0.03), transparent 60%),
-      var(--bg);
+    background: var(--bg-gradient);
     color: var(--text);
     font-family: 'Space Grotesk', system-ui, -apple-system, sans-serif;
     padding-top: var(--header-height);
@@ -56,39 +101,40 @@
     flex-direction: column;
     align-items: center;
     overflow-x: hidden;
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
 
-  ::selection { background: var(--brass); color: #060908; }
+  ::selection { background: var(--brass); color: #050807; }
   :focus-visible { outline: 2px solid var(--brass-bright); outline-offset: 3px; }
 
-  /* ---------- Header Responsiva ---------- */
   header {
     position: fixed; top: 0; left: 0; width: 100%; height: var(--header-height);
     display: flex; align-items: center; justify-content: space-between;
     padding: 0 clamp(16px, 5vw, 60px);
-    background: rgba(6, 9, 8, 0.85);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
+    background: var(--panel);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     border-bottom: 1px solid var(--hairline);
     z-index: 1000;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
   }
   
   .brand { display: flex; align-items: center; gap: clamp(8px, 2vw, 14px); }
   
   .dial {
-    width: clamp(32px, 4vw, 42px);
-    height: clamp(32px, 4vw, 42px);
+    width: clamp(34px, 4vw, 42px);
+    height: clamp(34px, 4vw, 42px);
     border-radius: 50%;
     border: 2px solid var(--brass);
     position: relative;
-    background: radial-gradient(circle at 35% 30%, #1a2921, #060908 80%);
-    box-shadow: 0 0 12px var(--brass-glow), inset 0 0 8px rgba(0,0,0,0.9);
+    background: radial-gradient(circle at 35% 30%, #1d3027, var(--bg) 80%);
+    box-shadow: 0 0 14px var(--brass-glow), inset 0 0 8px rgba(0,0,0,0.4);
     animation: unlock 1.2s cubic-bezier(.16, 1, .3, 1) both;
     flex-shrink: 0;
   }
   .dial::before {
     content: ''; position: absolute; inset: 3px; border-radius: 50%;
-    border: 1px dashed var(--brass-bright); opacity: 0.5;
+    border: 1px dashed var(--brass-bright); opacity: 0.6;
   }
   .dial::after {
     content: ''; position: absolute; top: 3px; left: 50%;
@@ -104,57 +150,96 @@
   .wordmark { 
     font-family: 'Fraunces', serif; 
     font-weight: 700; 
-    font-size: clamp(1.1rem, 2.5vw, 1.4rem); 
+    font-size: clamp(1.15rem, 2.5vw, 1.45rem); 
     letter-spacing: .02em; 
     white-space: nowrap;
   }
   .wordmark span { color: var(--brass); font-style: italic; font-weight: 300; }
   
+  .header-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .theme-toggle-btn {
+    background: var(--input-bg);
+    border: 1px solid var(--hairline);
+    color: var(--text);
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition);
+    font-size: .95rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  .theme-toggle-btn:hover {
+    border-color: var(--brass);
+    transform: scale(1.05);
+    color: var(--brass);
+  }
+
+  .mode-badge {
+    font-family: 'IBM Plex Mono', monospace; 
+    font-size: clamp(0.65rem, 1.1vw, 0.75rem); 
+    padding: 5px 10px; border-radius: 20px;
+    display: flex; align-items: center; gap: 6px;
+    white-space: nowrap; flex-shrink: 0;
+    border: 1px solid var(--hairline);
+  }
+  .mode-badge.cloud { color: var(--teal); background: var(--teal-bg); }
+  .mode-badge.local { color: var(--warning); background: var(--warning-bg); }
+  .mode-badge::before {
+    content: ''; width: 6px; height: 6px; border-radius: 50%;
+    flex-shrink: 0; animation: pulse 2s infinite;
+  }
+  .mode-badge.cloud::before { background: var(--teal); box-shadow: 0 0 8px var(--teal); }
+  .mode-badge.local::before { background: var(--warning); box-shadow: 0 0 8px var(--warning); }
+
   .entry-badge {
     font-family: 'IBM Plex Mono', monospace; 
-    font-size: clamp(0.65rem, 1.2vw, 0.78rem); 
-    letter-spacing: .05em;
-    color: var(--brass-bright); background: rgba(212,175,55,0.08);
+    font-size: clamp(0.65rem, 1.1vw, 0.75rem); 
+    color: var(--text); background: var(--input-bg);
     border: 1px solid var(--hairline); padding: 5px 12px; border-radius: 20px;
-    display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    display: flex; align-items: center; gap: 6px;
     white-space: nowrap; flex-shrink: 0;
   }
-  .entry-badge::before {
-    content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--brass-bright);
-    box-shadow: 0 0 8px var(--brass-bright); flex-shrink: 0;
-    animation: pulse 2s infinite;
-  }
+
   @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 
-  /* ---------- Layout Principal Fluid Grid ---------- */
   .main-wrapper {
     width: var(--container-width); 
     margin: 0 auto; 
-    padding: clamp(16px, 3vw, 40px) 0 80px;
+    padding: clamp(20px, 4vw, 45px) 0 80px;
   }
 
   .eyebrow-container {
-    display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;
+    display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;
   }
   .eyebrow {
-    font-family: 'IBM Plex Mono', monospace; font-size: .72rem; letter-spacing: .2em;
+    font-family: 'IBM Plex Mono', monospace; font-size: .75rem; letter-spacing: .2em;
     color: var(--brass); text-transform: uppercase; margin: 0; font-weight: 600;
   }
 
-  /* ---------- Formulário ---------- */
   .form-container {
-    background: linear-gradient(165deg, var(--panel), var(--panel-sub));
-    border: 1px solid var(--hairline);
+    background: var(--panel);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--panel-border);
     border-radius: var(--radius-lg);
-    padding: clamp(16px, 4vw, 32px);
-    margin-bottom: 35px;
+    padding: clamp(20px, 4vw, 36px);
+    margin-bottom: 40px;
     box-shadow: var(--shadow-main);
     position: relative;
     transition: var(--transition);
   }
-  .form-container:focus-within { border-color: var(--hairline-hover); }
+  .form-container:focus-within { border-color: var(--hairline-hover); box-shadow: 0 0 30px var(--brass-glow); }
   .form-container::before {
-    content: ''; position: absolute; top: 0; left: clamp(16px, 4vw, 32px); width: 48px; height: 3px;
+    content: ''; position: absolute; top: 0; left: clamp(20px, 4vw, 36px); width: 56px; height: 3px;
     background: linear-gradient(90deg, var(--brass-bright), var(--brass));
     border-radius: 0 0 4px 4px; box-shadow: 0 2px 12px var(--brass-glow);
   }
@@ -162,41 +247,40 @@
   label.field-label {
     display: block; font-family: 'IBM Plex Mono', monospace; font-size: .72rem;
     letter-spacing: .12em; color: var(--text-dim); text-transform: uppercase;
-    margin: 16px 0 8px; font-weight: 500;
+    margin: 18px 0 8px; font-weight: 500;
   }
   label.field-label:first-of-type { margin-top: 0; }
 
   input[type="text"], textarea {
-    width: 100%; padding: 12px 16px; background: rgba(0, 0, 0, 0.4);
+    width: 100%; padding: 14px 16px; background: var(--input-bg);
     border: 1px solid var(--hairline); border-radius: var(--radius); color: var(--text);
     font-family: 'Space Grotesk', sans-serif; 
-    font-size: 16px; /* Evita zoom automático no iOS */
-    line-height: 1.5; transition: var(--transition);
+    font-size: 16px;
+    line-height: 1.55; transition: var(--transition);
   }
   input[type="text"]::placeholder, textarea::placeholder { color: var(--text-placeholder); }
   input[type="text"]:focus, textarea:focus {
-    border-color: var(--brass); background: rgba(0, 0, 0, 0.6);
-    box-shadow: 0 0 15px rgba(212, 175, 55, 0.1);
+    border-color: var(--brass); background: var(--input-focus-bg);
+    box-shadow: 0 0 18px var(--brass-glow);
   }
-  textarea { resize: vertical; min-height: 110px; }
+  textarea { resize: vertical; min-height: 120px; }
 
-  /* Dropzone Customizado */
   .file-dropzone {
     position: relative;
     border: 1px dashed var(--hairline); border-radius: var(--radius);
-    padding: 14px 16px; background: rgba(0, 0, 0, 0.25);
+    padding: 16px 18px; background: var(--input-bg);
     display: flex; align-items: center; justify-content: space-between;
-    cursor: pointer; transition: var(--transition); min-height: 52px;
+    cursor: pointer; transition: var(--transition); min-height: 56px;
   }
   .file-dropzone:hover, .file-dropzone.dragover {
-    border-color: var(--brass); background: rgba(212, 175, 55, 0.05);
+    border-color: var(--brass); background: var(--brass-glow);
   }
   .file-dropzone input[type="file"] {
     position: absolute; inset: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer; z-index: 1;
   }
-  .file-info { display: flex; align-items: center; gap: 10px; color: var(--text-dim); font-size: .85rem; width: 100%; overflow: hidden; }
-  .file-info i { color: var(--brass); font-size: 1rem; flex-shrink: 0; }
-  .file-name { font-family: 'IBM Plex Mono', monospace; font-size: .78rem; color: var(--brass-bright); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .file-info { display: flex; align-items: center; gap: 12px; color: var(--text-dim); font-size: .88rem; width: 100%; overflow: hidden; }
+  .file-info i { color: var(--brass); font-size: 1.1rem; flex-shrink: 0; }
+  .file-name { font-family: 'IBM Plex Mono', monospace; font-size: .8rem; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   
   .btn-remove-file {
     background: none; border: none; color: var(--danger); font-size: 1.1rem;
@@ -206,102 +290,102 @@
   .btn-remove-file:hover { background: var(--danger-bg); }
 
   #btnSalvar {
-    width: 100%; margin-top: 22px; padding: 14px; border: none; border-radius: var(--radius);
-    background: linear-gradient(180deg, var(--brass-bright), var(--brass));
-    color: #060908; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: .95rem;
+    width: 100%; margin-top: 24px; padding: 15px; border: none; border-radius: var(--radius);
+    background: linear-gradient(135deg, #d4af37, #b8942d);
+    color: #050807; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: .98rem;
     letter-spacing: .04em; cursor: pointer; transition: var(--transition);
-    display: flex; align-items: center; justify-content: center; gap: 8px;
-    box-shadow: 0 4px 20px var(--brass-glow); min-height: 48px;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    box-shadow: 0 4px 20px var(--brass-glow); min-height: 50px;
   }
-  #btnSalvar:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(212, 175, 55, 0.4); }
+  #btnSalvar:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(212, 175, 55, 0.4); }
   #btnSalvar:active { transform: translateY(0); }
   #btnSalvar:disabled { opacity: .5; cursor: not-allowed; transform: none; box-shadow: none; }
 
-  .hint { font-size: .8rem; color: var(--danger); margin-top: 10px; min-height: 1.2em; font-family: 'IBM Plex Mono', monospace; word-break: break-word; }
+  .hint { font-size: .82rem; color: var(--danger); margin-top: 12px; min-height: 1.2em; font-family: 'IBM Plex Mono', monospace; word-break: break-word; }
 
-  /* ---------- Controles ---------- */
-  .vault-controls { display: flex; gap: 12px; margin-bottom: 24px; }
+  .vault-controls { display: flex; gap: 12px; margin-bottom: 28px; }
   .search-box { flex: 1; position: relative; }
-  .search-box i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-dim); font-size: .9rem; }
-  .search-box input { padding-left: 40px; }
+  .search-box i { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-dim); font-size: .95rem; }
+  .search-box input { padding-left: 44px; }
 
-  /* ---------- Lista de Cards (CSS Grid Adaptativo) ---------- */
   #listaPrompts { 
     display: grid; 
     grid-template-columns: var(--card-grid-cols); 
-    gap: clamp(16px, 2.5vw, 24px); 
+    gap: clamp(18px, 2.5vw, 26px); 
     align-items: start;
   }
 
   .state-msg {
     grid-column: 1 / -1;
-    text-align: center; padding: 40px 16px; color: var(--text-dim);
-    border: 1px dashed var(--hairline); border-radius: var(--radius-lg); background: rgba(0, 0, 0, 0.2);
+    text-align: center; padding: 48px 20px; color: var(--text-dim);
+    border: 1px dashed var(--hairline); border-radius: var(--radius-lg); background: var(--panel);
   }
-  .state-msg i { font-size: 2rem; color: var(--brass-dim); display: block; margin-bottom: 12px; }
-  .state-msg .sub { font-size: .82rem; margin-top: 6px; color: var(--text-placeholder); }
+  .state-msg i { font-size: 2.2rem; color: var(--brass-dim); display: block; margin-bottom: 14px; }
+  .state-msg .sub { font-size: .85rem; margin-top: 6px; color: var(--text-placeholder); }
 
   .prompt-card {
-    background: var(--panel-card); border: 1px solid var(--hairline); border-radius: var(--radius-lg);
-    padding: clamp(16px, 3vw, 24px); position: relative; box-shadow: var(--shadow-card);
+    background: var(--panel-card);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--hairline); border-radius: var(--radius-lg);
+    padding: clamp(18px, 3vw, 24px); position: relative; box-shadow: var(--shadow-card);
     transition: var(--transition); animation: rise 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
     display: flex; flex-direction: column; height: 100%;
   }
-  .prompt-card:hover { border-color: var(--hairline-hover); transform: translateY(-3px); box-shadow: var(--shadow-main); }
-  @keyframes rise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+  .prompt-card:hover { border-color: var(--hairline-hover); transform: translateY(-4px); box-shadow: var(--shadow-main); }
+  @keyframes rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
 
-  .card-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 12px; }
+  .card-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 14px; }
   
   .ledger-no {
-    background: var(--panel-sub); border: 1px solid var(--hairline); border-radius: 6px;
-    padding: 3px 8px; font-family: 'IBM Plex Mono', monospace; font-size: .7rem;
+    background: var(--input-bg); border: 1px solid var(--hairline); border-radius: 6px;
+    padding: 3px 9px; font-family: 'IBM Plex Mono', monospace; font-size: .72rem;
     color: var(--brass); white-space: nowrap; font-weight: 600; flex-shrink: 0;
   }
   
   .card-title {
-    font-family: 'Fraunces', serif; font-weight: 500; font-size: clamp(1.1rem, 1.8vw, 1.25rem); margin: 0;
+    font-family: 'Fraunces', serif; font-weight: 500; font-size: clamp(1.15rem, 1.8vw, 1.3rem); margin: 0;
     line-height: 1.35; color: var(--text); word-break: break-word; flex: 1;
   }
 
   .card-body {
-    font-size: .9rem; line-height: 1.6; color: #d8d3c8; margin: 0 0 16px;
-    white-space: pre-wrap; word-break: break-word; background: rgba(0, 0, 0, 0.3);
-    padding: 14px; border-radius: var(--radius); border-left: 3px solid var(--brass-dim);
+    font-size: .92rem; line-height: 1.65; color: var(--text); margin: 0 0 18px;
+    white-space: pre-wrap; word-break: break-word; background: var(--code-bg);
+    padding: 16px; border-radius: var(--radius); border-left: 3px solid var(--brass);
     flex: 1;
   }
 
-  .media-wrapper { margin-bottom: 16px; overflow: hidden; border-radius: var(--radius); border: 1px solid var(--hairline); background: #000; }
-  .media-preview { width: 100%; max-height: 320px; object-fit: contain; display: block; }
+  .media-wrapper { margin-bottom: 18px; overflow: hidden; border-radius: var(--radius); border: 1px solid var(--hairline); background: #000; }
+  .media-preview { width: 100%; max-height: 340px; object-fit: contain; display: block; }
 
-  /* Action Buttons Flexíveis */
   .card-actions { 
     display: flex; 
     gap: 10px; 
-    border-top: 1px solid rgba(201, 169, 97, 0.08); 
-    padding-top: 14px; 
+    border-top: 1px solid var(--hairline); 
+    padding-top: 16px; 
     margin-top: auto;
     flex-wrap: wrap;
   }
   .card-actions button {
-    border: none; border-radius: var(--radius-sm); padding: 10px 14px; font-size: .82rem;
+    border: none; border-radius: var(--radius-sm); padding: 10px 16px; font-size: .84rem;
     font-family: 'Space Grotesk', sans-serif; font-weight: 600; cursor: pointer;
     display: flex; align-items: center; justify-content: center; gap: 8px; transition: var(--transition);
     min-height: 44px; flex: 1 1 auto;
   }
   
   .btn-copy { background: var(--teal-bg); color: var(--teal); border: 1px solid rgba(77, 182, 172, 0.3) !important; }
-  .btn-copy:hover { background: rgba(77, 182, 172, 0.25); color: #80cbc4; }
+  .btn-copy:hover { background: rgba(77, 182, 172, 0.25); }
   
   .btn-delete { background: var(--danger-bg); color: var(--danger); border: 1px solid rgba(229, 115, 115, 0.3) !important; }
-  .btn-delete:hover { background: rgba(229, 115, 115, 0.25); color: #ef9a9a; }
+  .btn-delete:hover { background: rgba(229, 115, 115, 0.25); }
 
-  /* ---------- Toast Notification ---------- */
   .toast {
-    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(100px);
-    background: var(--panel); border: 1px solid var(--brass); color: var(--text);
-    padding: 10px 20px; border-radius: 40px; font-size: .85rem; width: max-content; max-width: 90vw;
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(100px);
+    background: var(--panel); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--brass); color: var(--text);
+    padding: 12px 24px; border-radius: 40px; font-size: .88rem; width: max-content; max-width: 90vw;
     box-shadow: var(--shadow-main); opacity: 0; pointer-events: none;
-    transition: var(--transition); z-index: 2000; display: flex; align-items: center; gap: 8px;
+    transition: var(--transition); z-index: 2000; display: flex; align-items: center; gap: 10px;
     text-align: center;
   }
   .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
@@ -310,15 +394,12 @@
     .dial, .prompt-card, .toast { animation: none !important; transition: none !important; }
   }
 
-  /* ---------- Breakpoints & Media Queries ---------- */
-
-  /* Telas pequenas/smartphones (Até 640px) */
   @media (max-width: 640px) {
     .card-actions { flex-direction: column; }
     .card-actions button { width: 100%; }
+    .header-controls { gap: 6px; }
   }
 
-  /* Tablets (Entre 641px e 1024px) */
   @media (min-width: 641px) and (max-width: 1024px) {
     :root {
       --container-width: 94%;
@@ -326,13 +407,11 @@
     }
   }
 
-  /* Notebooks e Telas Grandes (A partir de 1025px) */
   @media (min-width: 1025px) {
     :root {
       --container-width: 1100px;
       --card-grid-cols: repeat(2, 1fr);
     }
-    
     .btn-delete { flex: 0 0 auto; }
   }
 </style>
@@ -344,7 +423,14 @@
     <div class="dial" aria-hidden="true"></div>
     <div class="wordmark">Prompt<span>Vault</span></div>
   </div>
-  <div class="entry-badge" id="entryCount">000 Entradas</div>
+  
+  <div class="header-controls">
+    <button type="button" class="theme-toggle-btn" id="themeToggle" title="Alternar Tema (Claro/Escuro)" aria-label="Alternar Tema">
+      <i class="fa-solid fa-moon"></i>
+    </button>
+    <div class="mode-badge cloud" id="storageModeBadge">Nuvem</div>
+    <div class="entry-badge" id="entryCount">000 Entradas</div>
+  </div>
 </header>
 
 <main class="main-wrapper">
@@ -360,7 +446,7 @@
     <label class="field-label" for="conteudo">Prompt Completo</label>
     <textarea id="conteudo" placeholder="Cole as instruções detalhadas do seu prompt aqui..." rows="4" required></textarea>
 
-    <label class="field-label">Anexo de Referência (Imagem ou Vídeo)</label>
+    <label class="field-label">Anexo de Referência (Imagem ou Vídeo — Máx 10 MB)</label>
     <div class="file-dropzone" id="dropzone">
       <div class="file-info">
         <i class="fa-solid fa-paperclip" aria-hidden="true"></i>
@@ -390,7 +476,7 @@
   </div>
 
   <div id="listaPrompts">
-    <div class="state-msg"><i class="fa-solid fa-circle-notch fa-spin"></i>Acessando o cofre na nuvem…</div>
+    <div class="state-msg"><i class="fa-solid fa-circle-notch fa-spin"></i>Acessando o cofre…</div>
   </div>
 
 </main>
@@ -400,7 +486,6 @@
   <span id="toastMsg"></span>
 </div>
 
-<!-- SDKs do Firebase via CDN (Módulos ES) -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
   import { 
@@ -410,7 +495,6 @@
     getStorage, ref, uploadBytes, getDownloadURL, deleteObject 
   } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
-  // Sua Configuração do Firebase
   const firebaseConfig = {
     apiKey: "AIzaSyDNKgpaOCQ00RVxELsjAh3zoQZr3_PCis4",
     authDomain: "cofre-de-prompts.firebaseapp.com",
@@ -420,55 +504,59 @@
     appId: "1:503764090683:web:f9f9c7600a4846e030c11e"
   };
 
-  // Inicializa o Firebase
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-  const storage = getStorage(app);
-  const COLLECTION_NAME = 'entries';
+  const vaultForm        = document.getElementById('vaultForm');
+  const tituloEl         = document.getElementById('titulo');
+  const conteudoEl       = document.getElementById('conteudo');
+  const btnSalvar        = document.getElementById('btnSalvar');
+  const listaPrompts     = document.getElementById('listaPrompts');
+  const hint             = document.getElementById('hint');
+  const entryCount       = document.getElementById('entryCount');
+  const mediaInput       = document.getElementById('mediaInput');
+  const dropzone         = document.getElementById('dropzone');
+  const fileNameDisplay  = document.getElementById('fileNameDisplay');
+  const btnRemoveFile    = document.getElementById('btnRemoveFile');
+  const searchInput      = document.getElementById('searchInput');
+  const toast            = document.getElementById('toast');
+  const toastMsg         = document.getElementById('toastMsg');
+  const themeToggleBtn   = document.getElementById('themeToggle');
+  const themeIcon        = themeToggleBtn.querySelector('i');
+  const storageModeBadge = document.getElementById('storageModeBadge');
+  const htmlEl           = document.documentElement;
 
-  /* ---------- Elementos DOM ---------- */
-  const vaultForm       = document.getElementById('vaultForm');
-  const tituloEl        = document.getElementById('titulo');
-  const conteudoEl      = document.getElementById('conteudo');
-  const btnSalvar       = document.getElementById('btnSalvar');
-  const listaPrompts    = document.getElementById('listaPrompts');
-  const hint            = document.getElementById('hint');
-  const entryCount      = document.getElementById('entryCount');
-  const mediaInput      = document.getElementById('mediaInput');
-  const dropzone        = document.getElementById('dropzone');
-  const fileNameDisplay = document.getElementById('fileNameDisplay');
-  const btnRemoveFile   = document.getElementById('btnRemoveFile');
-  const searchInput     = document.getElementById('searchInput');
-  const toast           = document.getElementById('toast');
-  const toastMsg        = document.getElementById('toastMsg');
-
+  let db = null;
+  let storage = null;
+  let isFirebaseAvailable = false;
   let entriesCache = [];
+  const LOCAL_STORAGE_KEY = 'promptvault_entries_db';
 
-  /* ---------- Métodos Auxiliares ---------- */
+  function applyTheme(theme) {
+    htmlEl.setAttribute('data-theme', theme);
+    localStorage.setItem('promptvault_theme', theme);
+    themeIcon.className = theme === 'light' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+  }
+
+  const savedTheme = localStorage.getItem('promptvault_theme');
+  const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  applyTheme(savedTheme || (systemPrefersDark ? 'dark' : 'light'));
+
+  themeToggleBtn.addEventListener('click', () => {
+    const currentTheme = htmlEl.getAttribute('data-theme');
+    applyTheme(currentTheme === 'dark' ? 'light' : 'dark');
+  });
+
   function escapeHtml(str){
     if (typeof str !== 'string') return '';
-    return str
-      .replace(/&/g,'&amp;')
-      .replace(/</g,'&lt;')
-      .replace(/>/g,'&gt;')
-      .replace(/"/g,'&quot;');
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
   function escapeAttr(str){
     if (typeof str !== 'string') return '';
-    return str
-      .replace(/&/g,'&amp;')
-      .replace(/</g,'&lt;')
-      .replace(/>/g,'&gt;')
-      .replace(/"/g,'&quot;')
-      .replace(/'/g,'&#39;')
-      .replace(/\n/g,'&#10;');
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;').replace(/\n/g,'&#10;');
   }
 
   function showToast(msg, iconClass = 'fa-check'){
     toastMsg.textContent = msg;
-    const icon = toast.querySelector('i');
-    icon.className = 'fa-solid ' + iconClass;
+    toast.querySelector('i').className = 'fa-solid ' + iconClass;
     toast.classList.add('show');
     clearTimeout(showToast._t);
     showToast._t = setTimeout(() => toast.classList.remove('show'), 2400);
@@ -481,24 +569,23 @@
     btnRemoveFile.style.display = 'none';
   }
 
-  /* ---------- Drag & Drop ---------- */
-  ['dragenter', 'dragover'].forEach(eventName => {
-    dropzone.addEventListener(eventName, (e) => {
-      e.preventDefault(); e.stopPropagation();
-      dropzone.classList.add('dragover');
-    }, false);
-  });
+  ['dragenter', 'dragover'].forEach(e => dropzone.addEventListener(e, (evt) => {
+    evt.preventDefault(); evt.stopPropagation(); dropzone.classList.add('dragover');
+  }));
 
-  ['dragleave', 'drop'].forEach(eventName => {
-    dropzone.addEventListener(eventName, (e) => {
-      e.preventDefault(); e.stopPropagation();
-      dropzone.classList.remove('dragover');
-    }, false);
-  });
+  ['dragleave', 'drop'].forEach(e => dropzone.addEventListener(e, (evt) => {
+    evt.preventDefault(); evt.stopPropagation(); dropzone.classList.remove('dragover');
+  }));
 
   mediaInput.addEventListener('change', () => {
     const file = mediaInput.files[0];
     if (file) {
+      if (file.size > 10 * 1024 * 1024) {
+        hint.textContent = 'O arquivo selecionado excede o limite máximo de 10 MB.';
+        resetFileInput();
+        return;
+      }
+      hint.textContent = '';
       fileNameDisplay.textContent = file.name;
       fileNameDisplay.classList.add('file-name');
       btnRemoveFile.style.display = 'block';
@@ -508,13 +595,33 @@
   });
 
   btnRemoveFile.addEventListener('click', (e) => {
-    e.preventDefault(); e.stopPropagation();
-    resetFileInput();
+    e.preventDefault(); e.stopPropagation(); resetFileInput();
   });
 
-  /* ---------- Operações no Firebase ---------- */
+  function getLocalEntries() {
+    try {
+      return JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY) || '[]');
+    } catch (e) {
+      return [];
+    }
+  }
 
-  // Salvar entrada no Firestore + Storage
+  function saveLocalEntries(list) {
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(list));
+    entriesCache = list;
+    aplicarFiltroEExibir();
+  }
+
+  function setModeUI(isCloud) {
+    if (isCloud) {
+      storageModeBadge.textContent = 'Nuvem';
+      storageModeBadge.className = 'mode-badge cloud';
+    } else {
+      storageModeBadge.textContent = 'Modo Local';
+      storageModeBadge.className = 'mode-badge local';
+    }
+  }
+
   vaultForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     hint.textContent = '';
@@ -529,48 +636,77 @@
 
     const originalText = btnSalvar.innerHTML;
     btnSalvar.disabled = true;
-    btnSalvar.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Salvando na nuvem…';
+    btnSalvar.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Salvando...';
 
-    try {
-      let mediaUrl = null;
-      let storagePath = null;
-      let mediaType = null;
+    if (isFirebaseAvailable) {
+      try {
+        let mediaUrl = null;
+        let storagePath = null;
+        let mediaType = null;
 
-      // Upload de arquivo para o Firebase Storage
-      if (mediaInput.files.length > 0){
-        const file = mediaInput.files[0];
-        mediaType = file.type || 'application/octet-stream';
-        const fileExtension = file.name.split('.').pop();
-        storagePath = `prompts/${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${fileExtension}`;
-        
-        const storageRef = ref(storage, storagePath);
-        await uploadBytes(storageRef, file);
-        mediaUrl = await getDownloadURL(storageRef);
+        if (mediaInput.files.length > 0){
+          const file = mediaInput.files[0];
+          if (file.size > 10 * 1024 * 1024) {
+            throw new Error("Tamanho do arquivo excede 10 MB.");
+          }
+          mediaType = file.type || 'application/octet-stream';
+          const ext = file.name.split('.').pop();
+          storagePath = `prompts/${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${ext}`;
+          
+          const storageRef = ref(storage, storagePath);
+          await uploadBytes(storageRef, file);
+          mediaUrl = await getDownloadURL(storageRef);
+        }
+
+        await addDoc(collection(db, 'entries'), {
+          titulo, conteudo, mediaUrl, storagePath, mediaType, createdAt: new Date().toISOString()
+        });
+
+        vaultForm.reset(); resetFileInput();
+        showToast('Entrada salva na nuvem com sucesso!');
+      } catch (err) {
+        console.warn("Erro ao gravar no Firebase, alternando para armazenamento local:", err);
+        fallbackToLocalStorage('Armazenamento em nuvem indisponível. Entrada salva localmente.');
+        salvarLocalmente(titulo, conteudo);
       }
-
-      // Adiciona o documento ao Cloud Firestore
-      await addDoc(collection(db, COLLECTION_NAME), {
-        titulo,
-        conteudo,
-        mediaUrl,
-        storagePath,
-        mediaType,
-        createdAt: new Date().toISOString()
-      });
-
-      vaultForm.reset();
-      resetFileInput();
-      showToast('Entrada selada e salva na nuvem com sucesso!');
-    } catch (err) {
-      console.error(err);
-      hint.textContent = 'Falha ao salvar entrada no Firebase: ' + (err.message || 'Erro desconhecido.');
-    } finally {
-      btnSalvar.disabled = false;
-      btnSalvar.innerHTML = originalText;
+    } else {
+      salvarLocalmente(titulo, conteudo);
     }
+
+    btnSalvar.disabled = false;
+    btnSalvar.innerHTML = originalText;
   });
 
-  // Ações do Card (Copiar e Deletar)
+  function salvarLocalmente(titulo, conteudo) {
+    const list = getLocalEntries();
+    const file = mediaInput.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        list.unshift({
+          id: 'local_' + Date.now(),
+          titulo, conteudo,
+          mediaUrl: evt.target.result,
+          mediaType: file.type,
+          createdAt: new Date().toISOString()
+        });
+        saveLocalEntries(list);
+        vaultForm.reset(); resetFileInput();
+        showToast('Entrada selada localmente!');
+      };
+      reader.readAsDataURL(file);
+    } else {
+      list.unshift({
+        id: 'local_' + Date.now(),
+        titulo, conteudo, mediaUrl: null, mediaType: null,
+        createdAt: new Date().toISOString()
+      });
+      saveLocalEntries(list);
+      vaultForm.reset(); resetFileInput();
+      showToast('Entrada selada localmente!');
+    }
+  }
+
   listaPrompts.addEventListener('click', async (e) => {
     const btn = e.target.closest('button');
     if (!btn) return;
@@ -578,23 +714,24 @@
     if (!docId) return;
 
     if (btn.classList.contains('btn-delete')){
-      if (!confirm('Tem certeza de que deseja remover permanentemente esta entrada da nuvem?')) return;
+      if (!confirm('Tem certeza de que deseja remover esta entrada?')) return;
       
-      const entryToDelete = entriesCache.find(item => item.id === docId);
-      
-      try {
-        // Se houver arquivo anexo no Storage, apague-o primeiro
-        if (entryToDelete && entryToDelete.storagePath) {
-          const fileRef = ref(storage, entryToDelete.storagePath);
-          await deleteObject(fileRef).catch(err => console.warn('Erro ao deletar anexo:', err));
+      if (isFirebaseAvailable && !docId.startsWith('local_')) {
+        const itemToDelete = entriesCache.find(i => i.id === docId);
+        try {
+          if (itemToDelete && itemToDelete.storagePath) {
+            await deleteObject(ref(storage, itemToDelete.storagePath)).catch(() => {});
+          }
+          await deleteDoc(doc(db, 'entries', docId));
+          showToast('Entrada removida da nuvem.', 'fa-trash-can');
+        } catch (err) {
+          console.error("Erro ao excluir do Firebase:", err);
+          showToast('Erro ao remover da nuvem.', 'fa-triangle-exclamation');
         }
-
-        // Deleta o documento do Firestore
-        await deleteDoc(doc(doc(db, COLLECTION_NAME, docId)));
-        showToast('Entrada removida da nuvem.', 'fa-trash-can');
-      } catch (err) {
-        console.error(err);
-        showToast('Erro ao remover entrada.', 'fa-triangle-exclamation');
+      } else {
+        const list = getLocalEntries().filter(i => i.id !== docId);
+        saveLocalEntries(list);
+        showToast('Entrada removida do armazenamento local.', 'fa-trash-can');
       }
     } else if (btn.classList.contains('btn-copy')){
       const texto = btn.dataset.texto || '';
@@ -602,29 +739,29 @@
         await navigator.clipboard.writeText(texto);
         const originalContent = btn.innerHTML;
         btn.innerHTML = '<i class="fa-solid fa-check"></i> Copiado!';
-        showToast('Prompt copiado para a área de transferência.');
+        showToast('Prompt copiado com sucesso.');
         setTimeout(() => btn.innerHTML = originalContent, 1600);
       } catch (err) {
-        showToast('Erro ao copiar automaticamente.', 'fa-triangle-exclamation');
+        showToast('Erro ao copiar.', 'fa-triangle-exclamation');
       }
     }
   });
 
-  // Busca Local
-  searchInput.addEventListener('input', () => {
+  searchInput.addEventListener('input', () => aplicarFiltroEExibir());
+
+  function aplicarFiltroEExibir() {
     const term = searchInput.value.toLowerCase().trim();
     if (!term) {
       renderizar(entriesCache);
       return;
     }
     const filtered = entriesCache.filter(item => 
-      item.titulo.toLowerCase().includes(term) || 
-      item.conteudo.toLowerCase().includes(term)
+      (item.titulo || '').toLowerCase().includes(term) || 
+      (item.conteudo || '').toLowerCase().includes(term)
     );
     renderizar(filtered, true);
-  });
+  }
 
-  /* ---------- Renderização e Listener em Tempo Real (onSnapshot) ---------- */
   function renderizar(entries, isSearching = false){
     entryCount.textContent = `${String(entriesCache.length).padStart(3, '0')} Entradas`;
 
@@ -632,8 +769,8 @@
       listaPrompts.innerHTML = `
         <div class="state-msg">
           <i class="fa-solid ${isSearching ? 'fa-magnifying-glass' : 'fa-vault'}"></i>
-          ${isSearching ? 'Nenhum resultado encontrado para a busca.' : 'O cofre na nuvem está vazio.'}
-          <div class="sub">${isSearching ? 'Tente buscar por outros termos.' : 'Crie sua primeira entrada utilizando o formulário acima.'}</div>
+          ${isSearching ? 'Nenhum resultado encontrado.' : 'O cofre está vazio.'}
+          <div class="sub">${isSearching ? 'Tente buscar por outros termos.' : 'Crie sua primeira entrada no formulário acima.'}</div>
         </div>`;
       return;
     }
@@ -644,7 +781,6 @@
 
       if (p.mediaUrl) {
         const isVideo = (p.mediaType || '').startsWith('video/');
-        
         mediaHTML = `
           <div class="media-wrapper">
             ${isVideo 
@@ -674,39 +810,43 @@
     }).join('');
   }
 
-  // Monitora alterações no Firestore em Tempo Real
-  function escutarColecao(){
-    const q = query(collection(db, COLLECTION_NAME), orderBy('createdAt', 'desc'));
-    
-    onSnapshot(q, (snapshot) => {
-      entriesCache = snapshot.docs.map(docSnap => ({
-        id: docSnap.id,
-        ...docSnap.data()
-      }));
-
-      const searchTerm = searchInput.value.toLowerCase().trim();
-      if (searchTerm) {
-        const filtered = entriesCache.filter(item => 
-          item.titulo.toLowerCase().includes(searchTerm) || 
-          item.conteudo.toLowerCase().includes(searchTerm)
-        );
-        renderizar(filtered, true);
-      } else {
-        renderizar(entriesCache);
-      }
-    }, (error) => {
-      console.error("Erro ao sincronizar Firestore:", error);
-      listaPrompts.innerHTML = `
-        <div class="state-msg">
-          <i class="fa-solid fa-triangle-exclamation"></i>
-          Erro ao conectar com o banco de dados na nuvem.
-          <div class="sub">Verifique as regras de segurança do seu Firebase (Firestore e Storage).</div>
-        </div>`;
-    });
+  function fallbackToLocalStorage(msg) {
+    isFirebaseAvailable = false;
+    setModeUI(false);
+    if (msg) hint.textContent = msg;
+    entriesCache = getLocalEntries();
+    aplicarFiltroEExibir();
   }
 
-  // Inicialização do ouvinte em tempo real
-  escutarColecao();
+  function iniciarApp() {
+    try {
+      const app = initializeApp(firebaseConfig);
+      db = getFirestore(app);
+      storage = getStorage(app);
+
+      const q = query(collection(db, 'entries'), orderBy('createdAt', 'desc'));
+      
+      onSnapshot(q, (snapshot) => {
+        isFirebaseAvailable = true;
+        setModeUI(true);
+        hint.textContent = '';
+        
+        entriesCache = snapshot.docs.map(docSnap => ({
+          id: docSnap.id,
+          ...docSnap.data()
+        }));
+        aplicarFiltroEExibir();
+      }, (error) => {
+        console.warn("Aviso: Conexão com Firebase falhou. Usando Modo Local.", error);
+        fallbackToLocalStorage('Modo Nuvem indisponível. Alternado para Armazenamento Local.');
+      });
+    } catch (e) {
+      console.warn("Erro na inicialização do Firebase. Usando Modo Local.", e);
+      fallbackToLocalStorage('Modo Local ativo.');
+    }
+  }
+
+  iniciarApp();
 </script>
 </body>
 </html>
